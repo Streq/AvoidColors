@@ -5,6 +5,8 @@ var Game = (function(smod){
 			UP : 1,
 			RIGHT : 2,
 			DOWN : 3,
+			JUMP : 4,
+            
 		};
 		
 		mod.state = {
@@ -15,25 +17,22 @@ var Game = (function(smod){
 		};
 		
 		mod.mappings = [];
-		mod.mappings[mod.BUTTONS.LEFT] = 37;
-		mod.mappings[mod.BUTTONS.UP] = 38;
-		mod.mappings[mod.BUTTONS.RIGHT] = 39;
-		mod.mappings[mod.BUTTONS.DOWN] = 40;
+		mod.mappings[37] = mod.BUTTONS.LEFT;
+		mod.mappings[38] = mod.BUTTONS.UP;
+		mod.mappings[39] = mod.BUTTONS.RIGHT;
+		mod.mappings[40] = mod.BUTTONS.DOWN;
+		mod.mappings[90] = mod.BUTTONS.JUMP;
 		
 		var filter=function(event){
-			var pressed = (event.type=="keydown"),
-				i = 0,
-				len = mod.mappings.length;
+			var pressed = (event.type=="keydown");
 			//si es una tecla configurada retornar esa tecla mapeada
-			for(; i<len; ++i){
-				if(event.keyCode == mod.mappings[i]){
-					return {
-						code : i,
-						pressed : pressed,
-					};
-				}
-			}
-
+			let code = mod.mappings[event.keyCode];
+            if(code != null){
+                return {
+                    code : code,
+                    pressed : pressed,
+                };
+            }
 			//si no retornar null
 			return null;
 		};

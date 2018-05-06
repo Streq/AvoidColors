@@ -18,24 +18,34 @@ Game.Managers = (function(mod){
 		var STATE = {
 			IDLE : (function(){
 				function m(instance){
-					//instance.animation = ANIMATION.IDLE;
 				}
 				function handleInput(instance, input){
-					if(input.left){
-						instance.direction = DIRECTION.LEFT;
-						instance.state = new STATE.RUNNING();
-					}
-					if(input.right){
-						instance.direction = DIRECTION.RIGHT;
-						instance.state = new STATE.RUNNING();
-					}
+					let dir = input.right - input.left;
+                    switch(dir){
+                        case -1:    
+                            this.moveLeft(instance);
+                            break;
+                        case 1:
+                            this.moveRight(instance);
+                            break;
+                    }
 				}
 				function update(instance, dt){}
-
+                m.prototype.moveLeft = function(instance){
+                    instance.direction = DIRECTION.LEFT;
+                    instance.state = new STATE.RUNNING();
+                };
+				m.prototype.moveRight = function(instance){
+                    instance.direction = DIRECTION.RIGHT;
+                    instance.state = new STATE.RUNNING();
+                };
+				m.prototype.moveUp = function(){};
+				m.prototype.moveDown = function(){};
+                m.prototype.jump = function(){};
+				
 				m.prototype.handleInput = handleInput;
 				m.prototype.update = update;
-
-				return m;
+                return m;
 			})(),
 
 			RUNNING : (function(){
@@ -43,14 +53,16 @@ Game.Managers = (function(mod){
 					this.keepRunning = true;
 				}
 				function handleInput(instance, input){
-					if(input.left){
-						instance.direction = DIRECTION.LEFT;
-						this.keepRunning = true;
-					}
-					if(input.right){
-						instance.direction = DIRECTION.RIGHT;
-						this.keepRunning = true;
-					}
+					let dir = input.right - input.left;
+                    switch(dir){
+                        case -1:    
+                            this.moveLeft(instance);
+                            break;
+                        case 1:
+                            this.moveRight(instance);
+                            break;
+                    }
+                    
 				}
 				function update(instance, dt){
 					if(!this.keepRunning){
@@ -60,7 +72,18 @@ Game.Managers = (function(mod){
 						this.keepRunning = false;
 					}
 				}
-
+                m.prototype.moveLeft = function(instance){
+                    instance.direction = DIRECTION.LEFT;
+                    this.keepRunning = true;
+                };
+				m.prototype.moveRight = function(instance){
+                    instance.direction = DIRECTION.RIGHT;
+                    this.keepRunning = true;
+                };
+				m.prototype.moveUp = function(){};
+				m.prototype.moveDown = function(){};
+                m.prototype.jump = function(){};
+				
 				m.prototype.handleInput = handleInput;
 				m.prototype.update = update;
 				return m;
