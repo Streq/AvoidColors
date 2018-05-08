@@ -5,7 +5,9 @@ Game.Managers = (function(mod){
 		this.instances=[];
 	}
 	WallManager.prototype.create = function(x,y){
-		this.instances.push(new Wall(x,y));
+        var ret = new Wall(x,y);
+		this.instances.push(ret);
+        return ret;
 	}
 	WallManager.prototype.step = function(dt){
 		this.instances.forEach(

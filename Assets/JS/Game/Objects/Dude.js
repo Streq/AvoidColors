@@ -120,7 +120,9 @@ Game.Managers = (function(mod){
 		this.instances=[];
 	}
 	DudeManager.prototype.create = function(x,y){
-		this.instances.push(new Dude(x,y));
+		var ret = new Dude(x,y);
+        this.instances.push(ret);
+        return ret;
 	}
 	DudeManager.prototype.step = function(dt){
 		this.instances.forEach(

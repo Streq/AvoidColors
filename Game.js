@@ -33,9 +33,10 @@ var Game = (function(mod){
         , [29,10]
         ];
     var player = [2,8];
-	var loop = new Mocho.Loop(
+	var pj;
+    var loop = new Mocho.Loop(
 		function(onload){
-			world.DudeManager.create(player[0]*su,player[1]*su);
+			pj = world.DudeManager.create(player[0]*su,player[1]*su);
 			walls.forEach(
                 function(e){
                     world.WallManager.create(e[0]*su,e[1]*su);
@@ -45,6 +46,7 @@ var Game = (function(mod){
 		},
 		function(dt){
 			Game.Input.update();
+            //InputController.update();
 			world.update(dt);
 		},
 		function(){
