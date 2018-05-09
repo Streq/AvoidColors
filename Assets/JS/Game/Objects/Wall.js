@@ -17,9 +17,9 @@ Game.Managers = (function(mod){
 		)
 	}
 	
-	var sprite = new Mocho.Sprite(Game.images.tiles
-								  ,0,0,16,16
-								  ,0,0,16,16);
+	var sprite = new Mocho.Sprite( Game.images.tiles
+								 , 0, 0, 16, 16
+								 , 0, 0, 16, 16);
 	
 	function canvas2dContextDraw(ctx){
 		this.instances.forEach(

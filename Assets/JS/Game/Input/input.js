@@ -18,42 +18,27 @@ var Game = (function(smod){
 		map0[39] = mod.BUTTONS.RIGHT;
         map0[40] = mod.BUTTONS.DOWN;
 		map0[90] = mod.BUTTONS.JUMP;
-		
         
 		mod.eventQueue = Mocho.makeEventQueue(); 
-        mod.mappings.forEach(
-            function(map,i){
-                var filterPress=function(event){
-                    //si es una tecla configurada retornar esa tecla mapeada
-                    let code = map[event.keyCode];
-                    if(code != null){
-                        return {
-                            player : i,
-                            code : code,
-                            pressed : true,
-                        };
-                    }
-                    //si no retornar null
-                    return null;
-                };
-                var filterRelease=function(event){
-                    //si es una tecla configurada retornar esa tecla mapeada
-                    let code = map[event.keyCode];
-                    if(code != null){
-                        return {
-                            player : i,
-                            code : code,
-                            pressed : false,
-                        };
-                    }
-                    //si no retornar null
-                    return null;
-                };
-                
-                Mocho.addListener(mod.eventQueue, canvas,"keydown",filterPress);
-                Mocho.addListener(mod.eventQueue, canvas,"keyup",filterRelease);
-            }
-        );
+        
+        let filterFactory = function(pressed,player){
+            return function(event){
+                //si es una tecla configurada retornar esa tecla mapeada
+                let code = map0[event.keyCode];
+                if(code != null){
+                    return {
+                        player : player,
+                        code : code,
+                        pressed : pressed,
+                    };
+                }
+                //si no retornar null
+                return null;
+            };
+        };
+        Mocho.addListener(mod.eventQueue, canvas,"keydown", filterFactory(true, 0));
+        Mocho.addListener(mod.eventQueue, canvas,"keyup", filterFactory(false, 0));
+        
 		
         mod.state = new mod.State();
 		
@@ -65,7 +50,7 @@ var Game = (function(smod){
 			this.state.carryFromLastFrame();
             while(!queue.isEmpty()){
 				var key = queue.dequeue();
-                this.state.update(key.code,key.pressed);
+                this.state.update(key.code, key.pressed);
 			}	
 		}
 		

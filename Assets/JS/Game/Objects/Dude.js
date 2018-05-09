@@ -7,17 +7,40 @@ Game.Managers = (function(mod){
 			LEFT : -1,
 			RIGHT : 1,
 		}
-
-		var ANIMATION = {
-			IDLE : undefined,
-			RUNNING : undefined,
-		}
+        
+        var tileset = 
+            new Mocho.TileSheet
+                ( Game.images.sheet
+                , Game.images.sheet.width
+                , Game.images.sheet.height
+                , 16
+                , 16
+                );
+        
+        var frameTime = 200;
+        var ANIMATION = 
+            { IDLE : 
+                new Mocho.AnimationFrameSet
+                    ( tileset
+                    , 0
+                    , 1
+                    , "repeat"
+                    )
+            , RUNNING :
+                new Mocho.AnimationFrameSet
+                    ( tileset
+                    , 4
+                    , 4
+                    , "repeat"
+                    )
+            };
 
 		var Input = Game.Input.BUTTONS;
 
 		var STATE = {
 			IDLE : (function(){
 				function m(instance){
+                    this.animation = new Mocho.Animation(ANIMATION.IDLE,frameTime);
 				}
 				function handleInput(instance, input){
 					let dir = input.right - input.left;
@@ -30,7 +53,18 @@ Game.Managers = (function(mod){
                             break;
                     }
 				}
-				function update(instance, dt){}
+                function render(instance,ctx){
+                    let dir = instance.direction;
+                    ctx.scale(dir,1);
+                    let pos = instance.x * dir + 8*(dir-1);
+                    this.animation
+                        .getCurrentFrame()
+                        .draw(ctx,pos,instance.y);
+                    ctx.setTransform(1, 0, 0, 1, 0, 0);
+                }
+				function update(instance, dt){
+					this.animation.update(dt);
+                }
                 m.prototype.moveLeft = function(instance){
                     instance.direction = DIRECTION.LEFT;
                     instance.state = new STATE.RUNNING();
@@ -45,11 +79,13 @@ Game.Managers = (function(mod){
 				
 				m.prototype.handleInput = handleInput;
 				m.prototype.update = update;
+                m.prototype.render = render;
                 return m;
 			})(),
 
 			RUNNING : (function(){
 				function m(){
+                    this.animation = new Mocho.Animation(ANIMATION.RUNNING,frameTime);
 					this.keepRunning = true;
 				}
 				function handleInput(instance, input){
@@ -64,8 +100,18 @@ Game.Managers = (function(mod){
                     }
                     
 				}
+				function render(instance,ctx){
+                    let dir = instance.direction;
+                    ctx.scale(dir,1);
+                    let pos = instance.x * dir + 8*(dir-1);
+                    this.animation
+                        .getCurrentFrame()
+                        .draw(ctx,pos,instance.y);
+                    ctx.setTransform(1, 0, 0, 1, 0, 0);
+                }
 				function update(instance, dt){
-					if(!this.keepRunning){
+					this.animation.update(dt);
+                    if(!this.keepRunning){
 						instance.state = new STATE.IDLE();
 					} else {
 						instance.x += instance.speed * instance.direction * dt; 
@@ -86,9 +132,10 @@ Game.Managers = (function(mod){
 				
 				m.prototype.handleInput = handleInput;
 				m.prototype.update = update;
+                m.prototype.render = render;
 				return m;
 			})(),
-
+            
 			JUMPING : undefined,
 			AIRBORN : undefined,
 
@@ -100,7 +147,9 @@ Game.Managers = (function(mod){
 			this.y = y;
 
 			this.state = new STATE.IDLE(this);
-			this.direction = DIRECTION.RIGHT;
+            this.direction = DIRECTION.RIGHT;
+            
+            this.floored = false;
 		}
 		Dude.prototype.step = function(dt){
 			//this.animation.update(dt);
@@ -109,7 +158,9 @@ Game.Managers = (function(mod){
 		Dude.prototype.handleInput = function (input){
 			this.state.handleInput(this,input);
 		};
-
+        Dude.prototype.render = function(ctx){
+            this.state.render(this,ctx);
+        };
 		Dude.prototype.speed = 100/1000;
 		Dude.prototype.jumpSpeed = 300/1000;
 		Dude.prototype.fallSpeed = 200/1000;
@@ -132,14 +183,11 @@ Game.Managers = (function(mod){
 		)
 	}
 	
-	var sprite = new Mocho.Sprite(Game.images.sheet
-								  ,0,0,16,16
-								  ,0,0,16,16);
 	
 	function canvas2dContextDraw(ctx){
 		this.instances.forEach(
 			function(each){
-				sprite.draw(ctx,each.x,each.y);
+				each.render(ctx);
 			}
 		)
 	}

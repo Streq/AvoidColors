@@ -32,7 +32,7 @@ var Game = (function(mod){
         , [28,10]
         , [29,10]
         ];
-    var player = [2,8];
+    var player = [2,11];
 	var pj;
     var loop = new Mocho.Loop(
 		function(onload){
@@ -47,6 +47,17 @@ var Game = (function(mod){
 		function(dt){
 			Game.Input.update();
             //InputController.update();
+            let s = Game.Input.state.s;
+            let dir = s[Game.Input.BUTTONS.RIGHT][0] - s[Game.Input.BUTTONS.LEFT][0];
+            switch(dir){
+                case -1:    
+                    pj.state.moveLeft(pj);
+                    break;
+                case 1:
+                    pj.state.moveRight(pj);
+                    break;
+            }
+
 			world.update(dt);
 		},
 		function(){
