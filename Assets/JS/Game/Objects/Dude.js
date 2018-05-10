@@ -22,122 +22,151 @@ Game.Managers = (function(mod){
             { IDLE : 
                 new Mocho.AnimationFrameSet
                     ( tileset
-                    , 0
+                    , 0 + 4*0
                     , 1
                     , "repeat"
                     )
             , RUNNING :
                 new Mocho.AnimationFrameSet
                     ( tileset
-                    , 4
+                    , 0 + 4*1
                     , 4
                     , "repeat"
                     )
+			, AIRBORN : 
+			 	new Mocho.AnimationFrameSet
+			 		( tileset
+					, 1 + 4*2
+					, 1
+					, "repeat"
+					)
             };
 
 		var Input = Game.Input.BUTTONS;
+		var State = class {
+			constructor(){}
+			
+			update(instance,dt){}
+			render(instance,ctx){
+				let dir = instance.direction;
+				ctx.scale(dir,1);
+				let pos = instance.x * dir + 8*(dir-1);
+				this.animation
+					.getCurrentFrame()
+					.draw(ctx,pos,instance.y);
+				ctx.setTransform(1, 0, 0, 1, 0, 0);
+			}
+			
+			moveLeft(instance){}
+			moveRight(instance){}
+			moveUp(instance){}
+			moveDown(instance){}
+			jump(instance){}
 
+		}
 		var STATE = {
 			IDLE : (function(){
-				function m(instance){
-                    this.animation = new Mocho.Animation(ANIMATION.IDLE,frameTime);
-				}
-				function handleInput(instance, input){
-					let dir = input.right - input.left;
-                    switch(dir){
-                        case -1:    
-                            this.moveLeft(instance);
-                            break;
-                        case 1:
-                            this.moveRight(instance);
-                            break;
-                    }
-				}
-                function render(instance,ctx){
-                    let dir = instance.direction;
-                    ctx.scale(dir,1);
-                    let pos = instance.x * dir + 8*(dir-1);
-                    this.animation
-                        .getCurrentFrame()
-                        .draw(ctx,pos,instance.y);
-                    ctx.setTransform(1, 0, 0, 1, 0, 0);
-                }
-				function update(instance, dt){
-					this.animation.update(dt);
-                }
-                m.prototype.moveLeft = function(instance){
-                    instance.direction = DIRECTION.LEFT;
-                    instance.state = new STATE.RUNNING();
-                };
-				m.prototype.moveRight = function(instance){
-                    instance.direction = DIRECTION.RIGHT;
-                    instance.state = new STATE.RUNNING();
-                };
-				m.prototype.moveUp = function(){};
-				m.prototype.moveDown = function(){};
-                m.prototype.jump = function(){};
+				var m = 
+					class extends State{
+						constructor(){
+							super();
+							this.animation = new Mocho.Animation(ANIMATION.IDLE,frameTime);
+						}
+						update(instance, dt){
+							this.animation.update(dt);
+							instance.vx = (Math.abs(instance.vx) > 0.0001)*(instance.vx * 0.75);
+						}
+						moveLeft(instance){
+							instance.direction = DIRECTION.LEFT;
+							instance.state = new STATE.RUNNING();
+						}
+						moveRight(instance){
+							instance.direction = DIRECTION.RIGHT;
+							instance.state = new STATE.RUNNING();
+						}
+						jump(instance){
+							let st=new STATE.AIRBORN();
+							st.keepRunning = this.keepRunning;
+							instance.state = st;
+							instance.vy = -instance.jumpSpeed;
+						}
+					}
 				
-				m.prototype.handleInput = handleInput;
-				m.prototype.update = update;
-                m.prototype.render = render;
-                return m;
+				return m;
 			})(),
 
 			RUNNING : (function(){
-				function m(){
-                    this.animation = new Mocho.Animation(ANIMATION.RUNNING,frameTime);
-					this.keepRunning = true;
-				}
-				function handleInput(instance, input){
-					let dir = input.right - input.left;
-                    switch(dir){
-                        case -1:    
-                            this.moveLeft(instance);
-                            break;
-                        case 1:
-                            this.moveRight(instance);
-                            break;
-                    }
-                    
-				}
-				function render(instance,ctx){
-                    let dir = instance.direction;
-                    ctx.scale(dir,1);
-                    let pos = instance.x * dir + 8*(dir-1);
-                    this.animation
-                        .getCurrentFrame()
-                        .draw(ctx,pos,instance.y);
-                    ctx.setTransform(1, 0, 0, 1, 0, 0);
-                }
-				function update(instance, dt){
-					this.animation.update(dt);
-                    if(!this.keepRunning){
-						instance.state = new STATE.IDLE();
-					} else {
-						instance.x += instance.speed * instance.direction * dt; 
-						this.keepRunning = false;
+				var m =
+					class extends State{
+						constructor(){
+							super();
+							this.animation = new Mocho.Animation(ANIMATION.RUNNING,frameTime);
+							this.keepRunning = true;
+						}
+						update(instance, dt){
+							this.animation.update(dt);
+							if(!this.keepRunning){
+								instance.state = new STATE.IDLE();
+							} else {
+								instance.vx = instance.speed * instance.direction;
+							}
+							this.keepRunning = false;
+						}
+						moveLeft(instance){
+							instance.direction = DIRECTION.LEFT;
+							this.keepRunning = true;
+						}
+						moveRight(instance){
+							instance.direction = DIRECTION.RIGHT;
+                    		this.keepRunning = true;
+						}
+						jump(instance){
+							let st=new STATE.AIRBORN();
+							st.keepRunning = this.keepRunning;
+							instance.state = st;
+							instance.vy = -instance.jumpSpeed;
+						}
 					}
-				}
-                m.prototype.moveLeft = function(instance){
-                    instance.direction = DIRECTION.LEFT;
-                    this.keepRunning = true;
-                };
-				m.prototype.moveRight = function(instance){
-                    instance.direction = DIRECTION.RIGHT;
-                    this.keepRunning = true;
-                };
-				m.prototype.moveUp = function(){};
-				m.prototype.moveDown = function(){};
-                m.prototype.jump = function(){};
-				
-				m.prototype.handleInput = handleInput;
-				m.prototype.update = update;
-                m.prototype.render = render;
 				return m;
 			})(),
             
 			JUMPING : undefined,
-			AIRBORN : undefined,
+			AIRBORN : (function(){
+				var m =
+					class extends State{
+						constructor(){
+							super();
+							this.animation = new Mocho.Animation(ANIMATION.AIRBORN,frameTime);
+							
+						}
+						update(instance, dt){
+							instance.floored=false;
+							this.animation.update(dt);
+							if(instance.floored){
+								if(this.keepRunning){
+									instance.state = new STATE.RUNNING();
+								}else{
+									instance.state = new STATE.IDLE();
+								}
+							}
+							if(this.keepRunning){
+								instance.vx = instance.speed * instance.direction;
+							}else{
+								instance.vx = (Math.abs(instance.vx) > 0.0001)*(instance.vx * 0.9);
+							}
+							this.keepRunning = false;
+						}
+						moveLeft(instance){
+							instance.direction = DIRECTION.LEFT;
+							this.keepRunning = true;
+						}
+						moveRight(instance){
+							instance.direction = DIRECTION.RIGHT;
+                    		this.keepRunning = true;
+						}
+					}
+				return m;
+			})()
 
 		};
 
@@ -145,25 +174,26 @@ Game.Managers = (function(mod){
 		function Dude(x,y){
 			this.x = x;
 			this.y = y;
-
+			this.vx = 0;
+			this.vy = 0;
+			
 			this.state = new STATE.IDLE(this);
             this.direction = DIRECTION.RIGHT;
             
             this.floored = false;
 		}
 		Dude.prototype.step = function(dt){
-			//this.animation.update(dt);
 			this.state.update(this,dt);
+			this.x += this.vx * dt;
+			//this.y += this.vy * dt;
+			//this.vy += this.fallAcceleration * dt;
 		}
-		Dude.prototype.handleInput = function (input){
-			this.state.handleInput(this,input);
-		};
         Dude.prototype.render = function(ctx){
             this.state.render(this,ctx);
         };
-		Dude.prototype.speed = 100/1000;
-		Dude.prototype.jumpSpeed = 300/1000;
-		Dude.prototype.fallSpeed = 200/1000;
+		Dude.prototype.speed = 75/1000;
+		Dude.prototype.jumpSpeed = 200/1000;
+		Dude.prototype.fallAcceleration = 1/1000;
 
 		return Dude;
 	})();

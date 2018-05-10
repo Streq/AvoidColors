@@ -57,6 +57,9 @@ var Game = (function(mod){
                     pj.state.moveRight(pj);
                     break;
             }
+			jumpKey=s[Game.Input.BUTTONS.JUMP];
+			if(jumpKey[0] && jumpKey[1])
+				pj.state.jump(pj);
 
 			world.update(dt);
 		},
