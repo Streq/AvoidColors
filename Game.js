@@ -11,7 +11,7 @@ var Game = (function(mod){
 	
     var su = 16;//space unit
     
-    var walls =
+    var walls = 
         [ [0 ,12]
         , [1 ,12]
         , [2 ,12]
@@ -20,6 +20,8 @@ var Game = (function(mod){
         , [5 ,12]
         , [6 ,12]
         , [7 ,12]
+        , [10 ,11]
+        , [14 ,11]
         , [19,10]
         , [20,10]
         , [21,10]

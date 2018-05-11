@@ -53,7 +53,7 @@ Game.Managers = (function(mod){
 				let pos = instance.x * dir + 8*(dir-1);
 				this.animation
 					.getCurrentFrame()
-					.draw(ctx,pos,instance.y);
+					.draw(ctx,Math.floor(pos),Math.floor(instance.y));
 				ctx.setTransform(1, 0, 0, 1, 0, 0);
 			}
 			
@@ -75,6 +75,9 @@ Game.Managers = (function(mod){
 						update(instance, dt){
 							this.animation.update(dt);
 							instance.vx = (Math.abs(instance.vx) > 0.0001)*(instance.vx * 0.75);
+							if(!instance.floored){
+								instance.state=new STATE.AIRBORN();
+							}
 						}
 						moveLeft(instance){
 							instance.direction = DIRECTION.LEFT;
@@ -110,6 +113,9 @@ Game.Managers = (function(mod){
 							} else {
 								instance.vx = instance.speed * instance.direction;
 							}
+							if(!instance.floored){
+								instance.state=new STATE.AIRBORN();
+							}
 							this.keepRunning = false;
 						}
 						moveLeft(instance){
@@ -140,7 +146,6 @@ Game.Managers = (function(mod){
 							
 						}
 						update(instance, dt){
-							instance.floored=false;
 							this.animation.update(dt);
 							if(instance.floored){
 								if(this.keepRunning){
@@ -185,16 +190,18 @@ Game.Managers = (function(mod){
 		Dude.prototype.step = function(dt){
 			this.state.update(this,dt);
 			this.x += this.vx * dt;
-			//this.y += this.vy * dt;
-			//this.vy += this.fallAcceleration * dt;
+			this.y += this.vy * dt;
+			this.vy += this.fallAcceleration * dt;
 		}
         Dude.prototype.render = function(ctx){
             this.state.render(this,ctx);
         };
-		Dude.prototype.speed = 75/1000;
-		Dude.prototype.jumpSpeed = 200/1000;
+		Dude.prototype.speed = 100/1000;
+		Dude.prototype.jumpSpeed = 300/1000;
 		Dude.prototype.fallAcceleration = 1/1000;
-
+		Dude.prototype.w = 16;
+		Dude.prototype.h = 13;
+		
 		return Dude;
 	})();
 	function DudeManager(){
