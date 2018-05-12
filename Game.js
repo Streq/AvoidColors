@@ -13,7 +13,7 @@ var Game = (function(mod){
 	world.managers.push(world.LavaManager);
 	
     var su = 16;//space unit
-    
+	
     var walls = 
         [ [0 ,12]
         , [1 ,12]

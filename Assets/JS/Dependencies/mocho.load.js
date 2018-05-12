@@ -23,9 +23,24 @@ var Mocho = (function(mod){
 	
 	function loadImage(src, onload){
 		var img = document.createElement("img");
-		img.async = false;
 		img.onload = function(){onload(img);};
 		img.src = src;
+	}
+	
+	function loadImages(srcs, onload){
+		var amount = srcs.length;
+		var imgs = {};
+		srcs.forEach(
+			function(e){
+				loadImage(e,function(img){
+					imgs[e] = img;
+					if(!--amount){
+						onload(imgs)
+					};
+				})
+			}
+		)
+		
 	}
 	
 	function loadJSON(src, onload){
@@ -43,6 +58,7 @@ var Mocho = (function(mod){
 	mod.loadScripts = loadScripts;
 	mod.loadScript = loadScript;
 	mod.loadImage = loadImage;
+	mod.loadImages = loadImages;
 	mod.loadJSON = loadJSON;
 	return mod;
 	
