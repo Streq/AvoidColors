@@ -6,7 +6,8 @@ var Game = (function(smod){
 			RIGHT : 2,
 			DOWN : 3,
 			JUMP : 4,
-            SIZE : 5
+			RESET : 5,
+            SIZE : 6
             
 		};
 		
@@ -18,7 +19,8 @@ var Game = (function(smod){
 		map0[39] = mod.BUTTONS.RIGHT;
         map0[40] = mod.BUTTONS.DOWN;
 		map0[90] = mod.BUTTONS.JUMP;
-        
+        map0[82] = mod.BUTTONS.RESET;
+		
 		mod.eventQueue = Mocho.makeEventQueue(); 
         
         let filterFactory = function(pressed,player){

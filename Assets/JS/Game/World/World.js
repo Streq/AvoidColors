@@ -16,7 +16,7 @@ var Game = (function(mod){
 			updateManagers.call(this,dt);
 			var dudes = this.DudeManager.instances;
 			var walls = this.WallManager.instances;
-			
+			var lavas = this.LavaManager.instances;
 			dudes.forEach(
 				function(d){
 					d.floored = false;
@@ -26,11 +26,21 @@ var Game = (function(mod){
 														   ,w.x,w.y,w.w,w.h
 														   ,-d.vx * dt, -d.vy * dt))
 								{
-									if(d.y<w.y){//TODO: fix this dumbass logic
+									if(d.y<w.y&&d.vy>0){//TODO: fix this dumbass logic
 										d.y = w.y-d.h;
 										d.vy = 0;
 										d.floored = true;
 									}
+								}
+						}
+					)
+					lavas.forEach(
+						function(w){
+							if(Mocho.Collision.boxBoxMoving(d.x,d.y,d.w,d.h
+														   ,w.x,w.y,w.w,w.h
+														   ,-d.vx * dt, -d.vy * dt))
+								{
+									Game.reset();
 								}
 						}
 					)

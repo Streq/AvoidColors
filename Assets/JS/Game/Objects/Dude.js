@@ -143,7 +143,7 @@ Game.Managers = (function(mod){
 						constructor(){
 							super();
 							this.animation = new Mocho.Animation(ANIMATION.AIRBORN,frameTime);
-							
+							this.jumps = 1;	
 						}
 						update(instance, dt){
 							this.animation.update(dt);
@@ -169,33 +169,48 @@ Game.Managers = (function(mod){
 							instance.direction = DIRECTION.RIGHT;
                     		this.keepRunning = true;
 						}
+						jump(instance){
+							if(this.jumps > 0){
+								instance.vy = -instance.jumpSpeed;
+								--this.jumps;
+							}
+						}
 					}
 				return m;
 			})()
 
 		};
 
+		class Dude{
+			constructor(x,y){
+				this.x = x;
+				this.y = y;
+				this.vx = 0;
+				this.vy = 0;
 
-		function Dude(x,y){
-			this.x = x;
-			this.y = y;
-			this.vx = 0;
-			this.vy = 0;
+				this.state = new STATE.IDLE(this);
+				this.direction = DIRECTION.RIGHT;
+
+				this.floored = false;
+			}
 			
-			this.state = new STATE.IDLE(this);
-            this.direction = DIRECTION.RIGHT;
-            
-            this.floored = false;
+			step(dt){
+				this.state.update(this,dt);
+				this.x += this.vx * dt;
+				this.y += this.vy * dt;
+				this.vy += this.fallAcceleration * dt;
+			}
+			
+			render(ctx){
+				this.state.render(this,ctx);
+			}
+			
+			moveLeft(){this.state.moveLeft(this);}
+			moveRight(){this.state.moveRight(this);}
+			moveUp(instance){this.state.moveUp(this);}
+			moveDown(instance){this.state.moveDown(this);}
+			jump(instance){this.state.jump(this);}
 		}
-		Dude.prototype.step = function(dt){
-			this.state.update(this,dt);
-			this.x += this.vx * dt;
-			this.y += this.vy * dt;
-			this.vy += this.fallAcceleration * dt;
-		}
-        Dude.prototype.render = function(ctx){
-            this.state.render(this,ctx);
-        };
 		Dude.prototype.speed = 100/1000;
 		Dude.prototype.jumpSpeed = 300/1000;
 		Dude.prototype.fallAcceleration = 1/1000;
