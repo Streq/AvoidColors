@@ -14,28 +14,31 @@ var Game = (function(mod){
 	
     var su = 16;//space unit
 	
-    var walls = 
-        [ [0 ,12]
-        , [1 ,12]
-        , [2 ,12]
-        , [3 ,12]
-        , [4 ,12]
-        , [5 ,12]
-        , [6 ,12]
-        , [7 ,12]
-        , [10,11]
-        , [14,11]
-        , [19,10]
-        , [20,10]
-        , [21,10]
-        , [22,10]
-        , [23,10]
-        , [24,10]
-        , [25,10]
-        , [26,10]
-        , [27,10]
-        , [28,10]
-        , [29,10]
+    let type_wall = Game.Managers.WallManager.TYPE.BLOCK;
+	let type_tile = Game.Managers.WallManager.TYPE.TILE;
+	let type_lilblock = Game.Managers.WallManager.TYPE.LITTLE_BLOCK;
+	var walls = 
+        [ [0 ,12, type_wall]
+        , [1 ,12, type_wall]
+        , [2 ,12, type_wall]
+        , [3 ,12, type_wall]
+        , [4 ,12, type_wall]
+        , [5 ,12, type_wall]
+        , [6 ,12, type_tile]
+        , [7 ,12, type_tile]
+        , [10,11, type_lilblock]
+        , [14,11, type_lilblock]
+        , [19,10, type_tile]
+        , [20,10, type_tile]
+        , [21,10, type_wall]
+        , [22,10, type_wall]
+        , [23,10, type_wall]
+        , [24,10, type_wall]
+        , [25,10, type_wall]
+        , [26,10, type_wall]
+        , [27,10, type_wall]
+        , [28,10, type_wall]
+        , [29,10, type_wall]
         ];
 	
 	var lavas = 
@@ -83,7 +86,7 @@ var Game = (function(mod){
 			pj = world.DudeManager.create(player[0]*su,player[1]*su);
 			walls.forEach(
                 function(e){
-                    world.WallManager.create(e[0]*su,e[1]*su);
+                    world.WallManager.create(e[0]*su,e[1]*su,e[2]);
                 }
             )
 			lavas.forEach(

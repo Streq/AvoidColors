@@ -1,46 +1,88 @@
 var Game = Game||{};
 
 Game.Managers = (function(mod){
-	function WallManager(){
-		this.instances=[];
+	class WallManager{
+		constructor(){
+			this.instances = [];
+		}
+		
+		create(x, y, type){
+			type = type || 0;
+			let inst = this.instances[type] = this.instances[type] || [];
+			var ret = WallManager.factory[type](x,y);
+			inst.push(ret);
+			return ret;
+		}
+		
+		step(dt){
+			this.instances.forEach(
+				function(eachContainer){
+					eachContainer.forEach(
+						function(each){
+							each.STEP(dt);
+						}
+					)
+				}
+			);
+		}
 	}
-	WallManager.prototype.create = function(x,y){
-        var ret = new Wall(x,y);
-		this.instances.push(ret);
-        return ret;
+	WallManager.TYPE=
+	{
+		BLOCK : 0,
+		TILE : 1,
+		LITTLE_BLOCK : 2,
+	};
+	WallManager.factory = []
+	WallManager.factory[WallManager.TYPE.BLOCK] = function(x,y){
+		return new Wall(x,y);
 	}
-	WallManager.prototype.step = function(dt){
-		this.instances.forEach(
-			function(each){
-				each.STEP(dt);
-			}
-		)
+	WallManager.factory[WallManager.TYPE.TILE] = function(x,y){
+		var ret = new Wall(x,y);
+		ret.h = 4;
+		return ret;
 	}
-	
-	var sprite = new Mocho.Sprite( Game.images.tiles
-								 , 0, 0, 16, 16
-								 , 0, 0, 16, 16);
+	WallManager.factory[WallManager.TYPE.LITTLE_BLOCK] = function(x,y){
+		var ret = new Wall(x,y);
+		ret.h = 8;
+		ret.w = 8;
+		return ret;
+	}
+	var sprites = []
+	sprites[WallManager.TYPE.BLOCK] = new Mocho.Sprite( Game.images.tiles
+		 , 0, 0, 16, 16
+		 , 0, 0, 16, 16);
+	sprites[WallManager.TYPE.TILE] = new Mocho.Sprite( Game.images.tiles
+		 , 16, 0, 16, 16
+		 , 0, 0, 16, 16);
+	sprites[WallManager.TYPE.LITTLE_BLOCK] = new Mocho.Sprite( Game.images.tiles
+		 , 16*8, 0, 16, 16
+		 , 0, 0, 16, 16);
 	
 	function canvas2dContextDraw(ctx){
 		this.instances.forEach(
-			function(each){
-				sprite.draw(ctx,each.x,each.y);
+			function(eachContainer,type){
+				eachContainer.forEach(
+					function(each){
+						sprites[type].draw(ctx,each.x,each.y);
+					}
+				)
 			}
 		)
 	}
 	
 	WallManager.prototype.render = canvas2dContextDraw;
 	
-	function Wall (x,y){
-		this.x=x;
-		this.y=y;
-		this.w = 16;
-		this.h = 16;
+	class Wall {
+		constructor(x,y){
+			this.x=x;
+			this.y=y;
+			this.w = 16;
+			this.h = 16;
+		}
+		STEP(dt){}
+		onCollision(other){}
 	}
 	//global events
-	Wall.prototype.STEP = function(dt){};
-	Wall.prototype.onCollision = function(other){}
-	
 	mod.WallManager = WallManager;
 	
 	/*	
