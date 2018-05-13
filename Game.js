@@ -39,8 +39,12 @@ var Game = (function(mod){
         , [27,10, type_wall]
         , [28,10, type_wall]
         , [29,10, type_wall]
+        , [9 ,5 , type_wall]
+        , [14,5 , type_wall]
         ];
 	
+	let type_sur = Game.Managers.LavaManager.TYPE.SURFACE;
+	let type_in = Game.Managers.LavaManager.TYPE.INNER;
 	var lavas = 
 		[ [0 ,19]
         , [1 ,19]
@@ -49,14 +53,14 @@ var Game = (function(mod){
         , [4 ,19]
         , [5 ,19]
         , [6 ,19]
-        , [7 ,19]
+        , [7 ,19] 
         , [8 ,19]
-        , [9 ,19]
-        , [10,19]
-        , [11,19]
-		, [12,19]
-        , [13,19]
-        , [14,19]
+        , [9 ,19], [9 ,8 ,type_in] 
+        , [10,19], [10,8 ,type_in] 
+        , [11,19], [11,8 ,type_in] 
+		, [12,19], [12,8 ,type_in] 
+        , [13,19], [13,8 ,type_in] 
+        , [14,19], [14,8 ,type_in] 
         , [15,19]
         , [16,19]
         , [17,19]
@@ -91,7 +95,7 @@ var Game = (function(mod){
             )
 			lavas.forEach(
                 function(e){
-                    world.LavaManager.create(e[0]*su,e[1]*su);
+                    world.LavaManager.create(e[0]*su,e[1]*su,e[2]);
                 }
             )
             onload();
