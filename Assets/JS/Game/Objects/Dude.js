@@ -8,16 +8,17 @@ Game.Managers = (function(mod){
 			RIGHT : 1,
 		}
         
+        var sheet = Game.images.sheet2;
         var tileset = 
             new Mocho.TileSheet
-                ( Game.images.sheet
-                , Game.images.sheet.width
-                , Game.images.sheet.height
+                ( sheet
+                , sheet.width
+                , sheet.height
                 , 16
                 , 16
                 );
         
-        var frameTime = 200;
+        var frameTime = 150;
         var ANIMATION = 
             { IDLE : 
                 new Mocho.AnimationFrameSet
@@ -29,14 +30,14 @@ Game.Managers = (function(mod){
             , RUNNING :
                 new Mocho.AnimationFrameSet
                     ( tileset
-                    , 0 + 4*1
-                    , 4
+                    , 0 + 8*7//, 0 + 4*1
+                    , 6//, 4
                     , "repeat"
                     )
 			, AIRBORN : 
 			 	new Mocho.AnimationFrameSet
 			 		( tileset
-					, 1 + 4*2
+					, 1 + 8*2//, 1 + 4*2
 					, 1
 					, "repeat"
 					)

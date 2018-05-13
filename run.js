@@ -1,10 +1,14 @@
 var Game = {};
 (function(){
 	function loadTheFrickinGame(){
-		Mocho.loadImages(["Assets/Images/tiles.png","Assets/Images/simple_sheet.png"],
+		Mocho.loadImages(
+            [ "Assets/Images/tiles.png"
+            , "Assets/Images/simple_sheet.png"
+            , "Assets/Images/sheet2.png"],
 			function(imgs){
 				Game.images=Game.images||{};
 				Game.images.sheet = imgs["Assets/Images/simple_sheet.png"];
+                Game.images.sheet2 = imgs["Assets/Images/sheet2.png"];
 				Game.images.tiles = imgs["Assets/Images/tiles.png"];
 				loadSrc();
 			}
