@@ -2,6 +2,8 @@ var Game = (function(mod){
 	var canvas = document.getElementById("canvas");
 	var ctx = canvas.getContext("2d");
 	
+    mod.canvas = canvas;
+    mod.ctx = ctx;
 	var world = new Game.World();
 	world.DudeManager = new Game.Managers.DudeManager();
 	world.managers.push(world.DudeManager);
@@ -26,21 +28,11 @@ var Game = (function(mod){
         , [5 ,12, type_wall]
         , [6 ,12, type_tile]
         , [7 ,12, type_tile]
-        , [10,11, type_lilblock]
-        , [14,11, type_lilblock]
-        , [19,10, type_tile]
-        , [20,10, type_tile]
-        , [21,10, type_wall]
-        , [22,10, type_wall]
-        , [23,10, type_wall]
-        , [24,10, type_wall]
-        , [25,10, type_wall]
-        , [26,10, type_wall]
-        , [27,10, type_wall]
-        , [28,10, type_wall]
-        , [29,10, type_wall]
-        , [9 ,5 , type_wall]
-        , [14,5 , type_wall]
+        , [11,11, type_lilblock]
+        , [15,11, type_lilblock]
+        , [19,10, type_lilblock]
+        , [9 ,5 , type_lilblock]
+        , [14,5 , type_lilblock]
         ];
 	
 	let type_sur = Game.Managers.LavaManager.TYPE.SURFACE;
@@ -123,7 +115,7 @@ var Game = (function(mod){
 			world.update(dt);
 		},
 		function(){
-			ctx.fillStyle="black";
+			ctx.fillStyle="#000000";
 			ctx.fillRect(0,0,canvas.width,canvas.height);
 			world.render(ctx);
 		}

@@ -44,9 +44,7 @@ var Game = {};
 				[ 'Game.js'
 				].map(function(e){return ""+e;})
 			);
-			Mocho.loadScripts(srcs,function(){
-				Game.run();
-			});
+			Mocho.loadScripts(srcs).then(() => Game.run());
 		}
 	}
 	var script = document.createElement("script");

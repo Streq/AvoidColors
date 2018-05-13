@@ -5,7 +5,7 @@ var Mocho = (function(mod){
 	 * @param {String[]} srcs - the scripts paths,
 	 * @param {function()} onload - function to execute once every script is loaded.
 	 */
-	function loadScripts(srcs, onload){
+	function loadScriptsOld(srcs, onload){
 		function loadAndSetUpNext(index,array){
 			var callback;
 			if(index < array.length-1){
@@ -24,12 +24,24 @@ var Mocho = (function(mod){
 	 * @param {String} src - the script path,
 	 * @param {function()} onload - function to execute once the script is loaded.
 	 */
-	function loadScript(src, onload){
+	function loadScriptOld(src, onload){
 		var script = document.createElement("script");
 		script.onload = onload;
 		script.src = src;
 		document.head.appendChild(script);
 	}
+    
+    function loadScript(src){
+        return new Promise((resolve, reject) => loadScriptOld(src,resolve));
+    }
+    
+    function loadScripts(srcs){
+        return new Promise((resolve, reject) => {
+            var aux=new Promise((resolve, reject) => resolve());
+            srcs.forEach((each) => aux = aux.then(()=>loadScript(each)));
+            aux.then(resolve);
+        });
+    }
 	
 	/**
 	 * Load some dang image, then pass it to a callback;
