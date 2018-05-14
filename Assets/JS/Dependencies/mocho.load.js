@@ -5,15 +5,15 @@ var Mocho = (function(mod){
 	 * @param {String} src - the script path,
 	 * @param {function()} [onload] - function to execute once the script is loaded.
 	 */
-    function loadScript(src, onload){
-		onload = onload || ((x) => x);
-        return new Promise((resolve) => {
+	function loadScript(src, onload){
+		onload = onload || (x => x);
+		return new Promise((resolve) => {
 			var script = document.createElement("script");
 			script.onload = () => resolve(onload());
 			script.src = src;
 			document.head.appendChild(script);
 		});
-    }
+	}
 
 	/**
 	 * Load some dang scripts in the specified order;
@@ -21,12 +21,12 @@ var Mocho = (function(mod){
 	 * @param {function()} [onload] - function to execute once every script is loaded.
 	 */
 	function loadScripts(srcs, onload){
-        onload = onload || ((x) => x);
-        return new Promise((resolve) => {
+		onload = onload || (x => x);
+		return new Promise((resolve) => {
 			srcs.reduce((p, src) => p.then(() => loadScript(src)), Promise.resolve())
 				.then(() => resolve(onload()));
-        });
-    }
+		});
+	}
 	
 	/**
 	 * Load some dang image, then pass it to a callback;
@@ -34,7 +34,7 @@ var Mocho = (function(mod){
 	 * @param {function(Image img)} [onload] - function to execute once the image is loaded.
 	 */
 	function loadImage(src, onload){
-		onload = onload || ((x) => x);
+		onload = onload || (x => x);
 		return new Promise((resolve) => {
 			var img = document.createElement("img");
 			img.onload = () => resolve(onload(img));
@@ -49,12 +49,14 @@ var Mocho = (function(mod){
 	 * @param {function(loadImages~ImageMap imgs)}[onload] - function to execute once all images are loaded.
 	 */
 	function loadImages(srcs, onload){
-		onload = onload || ((x) => x);
+		onload = onload || (x => x);
 		var imgs = {};
 		function loadAndAdd(src){
-			return loadImage(src).then((img) => {imgs[src] = img;});
+			return loadImage(src)
+				.then(img => {imgs[src] = img;});
 		}
-		return Promise.all(srcs.map(loadAndAdd)).then(() => onload(imgs));
+		return Promise.all(srcs.map(loadAndAdd))
+			.then(() => onload(imgs));
 	}
 	
 	
@@ -72,15 +74,10 @@ var Mocho = (function(mod){
 	 * @param {function(Object json)} onload - function to execute once the json is loaded.
 	 */
 	function loadJSON(src, onload){
-		fetch(src).then(
-			function(response) {
-				return response.json();
-			}
-		).then(
-			function(myJson){
-				onload(myJson);
-			}
-		);
+		onload = onload || (x => x);
+		return fetch(src)
+			.then(response => response.json())
+			.then(json => onload(json));
 	}
 	
 	mod.loadScripts = loadScripts;
