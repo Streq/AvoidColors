@@ -47,12 +47,12 @@ var Game = (function(mod){
         , [6 ,19]
         , [7 ,19] 
         , [8 ,19]
-        , [9 ,19], [9 ,8 ,type_in] 
-        , [10,19], [10,8 ,type_in] 
-        , [11,19], [11,8 ,type_in] 
-		, [12,19], [12,8 ,type_in] 
-        , [13,19], [13,8 ,type_in] 
-        , [14,19], [14,8 ,type_in] 
+        , [9 ,19], [9 ,8 ,type_in],[9 ,7] 
+        , [10,19], [10,8 ,type_in],[10,7]
+        , [11,19], [11,8 ,type_in],[11,7]
+		, [12,19], [12,8 ,type_in],[12,7]
+        , [13,19], [13,8 ,type_in],[13,7]
+        , [14,19], [14,8 ,type_in],[14,7]
         , [15,19]
         , [16,19]
         , [17,19]
@@ -116,7 +116,7 @@ var Game = (function(mod){
 		},
 		function(){
 			ctx.fillStyle="#000000";
-			ctx.fillRect(0,0,canvas.width,canvas.height);
+			ctx.fillRect(0, 0, canvas.width, canvas.height);
 			world.render(ctx);
 		}
 	);

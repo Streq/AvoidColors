@@ -1,21 +1,11 @@
 var Game = {};
 (function(){
 	function loadTheFrickinGame(){
-		Mocho.loadImages(
-            [ "Assets/Images/tiles.png"
+		let imgSrcs = 
+			[ "Assets/Images/tiles.png"
             , "Assets/Images/simple_sheet.png"
-            , "Assets/Images/sheet2.png"],
-			function(imgs){
-				Game.images=Game.images||{};
-				Game.images.sheet = imgs["Assets/Images/simple_sheet.png"];
-                Game.images.sheet2 = imgs["Assets/Images/sheet2.png"];
-				Game.images.tiles = imgs["Assets/Images/tiles.png"];
-				loadSrc();
-			}
-		);
-		
-		function loadSrc(){
-			let srcs =
+            , "Assets/Images/sheet2.png"];
+		let scriptSrcs =
 				[ 'math.js'
 				, 'dom.js'
 				, 'loop.js'
@@ -44,8 +34,19 @@ var Game = {};
 				[ 'Game.js'
 				].map(function(e){return ""+e;})
 			);
-			Mocho.loadScripts(srcs).then(() => Game.run());
-		}
+		
+		Mocho.loadImages(imgSrcs)
+			.then(
+				(imgs)=>{
+					Game.images=Game.images||{};
+					Game.images.sheet = imgs["Assets/Images/simple_sheet.png"];
+					Game.images.sheet2 = imgs["Assets/Images/sheet2.png"];
+					Game.images.tiles = imgs["Assets/Images/tiles.png"];
+				}
+			)
+			.then(() => Mocho.loadScripts(scriptSrcs))
+			.then(() => Game.run());
+		
 	}
 	var script = document.createElement("script");
 	script.onload = loadTheFrickinGame;
