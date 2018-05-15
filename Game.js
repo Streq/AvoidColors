@@ -1,10 +1,8 @@
 var Game = (function(mod){
-	var canvas = document.getElementById("canvas");
-	var ctx = canvas.getContext("2d");
+	var canvas = mod.canvas;
+	var ctx = mod.ctx;
 	
-    mod.canvas = canvas;
-    mod.ctx = ctx;
-	var world = new Game.World();
+    var world = new Game.World();
 	world.DudeManager = new Game.Managers.DudeManager();
 	world.managers.push(world.DudeManager);
 	

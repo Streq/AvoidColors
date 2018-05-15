@@ -37,8 +37,28 @@ var Mocho = (function(mod){
         });
     }
     
+    var preventDefaultArrowKeys = (event) => {
+        switch(event.keyCode){
+            case 37:
+            case 38:
+            case 39:
+            case 40:
+                event.view.event.preventDefault();
+        }  
+    };
+    
+    function avoidArrowKeyScroll(element){
+        element.addEventListener("keydown", preventDefaultArrowKeys)
+    }
+    
+    function allowArrowKeyScroll(element){
+        element.removeEventListener("keydown", preventDefaultArrowKeys);
+    }
+    
 	mod.makeEventQueue = makeEventListenerQueue;
     mod.addListener = addListener;
+    mod.avoidArrowKeyScroll = avoidArrowKeyScroll;
+    mod.allowArrowKeyScroll = allowArrowKeyScroll;
 	return mod;
 	
 })(Mocho||{});

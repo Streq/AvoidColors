@@ -38,8 +38,8 @@ var Game = (function(smod){
                 return null;
             };
         };
-        Mocho.addListener(mod.eventQueue, canvas,"keydown", filterFactory(true, 0));
-        Mocho.addListener(mod.eventQueue, canvas,"keyup", filterFactory(false, 0));
+        Mocho.addListener(mod.eventQueue, Game.canvas,"keydown", filterFactory(true, 0));
+        Mocho.addListener(mod.eventQueue, Game.canvas,"keyup", filterFactory(false, 0));
         
 		
         mod.state = new mod.State();

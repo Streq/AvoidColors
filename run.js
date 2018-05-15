@@ -14,6 +14,7 @@ var Game = {};
 				, 'input.js'
 				, 'collision.js'
 				].map(function(e){return "Assets/JS/Dependencies/mocho."+e;})
+			.concat("Assets/JS/Game/Setup/dom.js")
 			.concat(
 				[ 'state.js'
 				, 'input.js'
@@ -35,6 +36,7 @@ var Game = {};
 				].map(function(e){return ""+e;})
 			);
 		
+        
 		Mocho.loadImages(imgSrcs)
 			.then(
 				(imgs)=>{
