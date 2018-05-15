@@ -88,12 +88,57 @@ Mocho.Collision = (function(mod){
             )
         );
     }
-    
+    function boxBoxIntersection(x0, y0, w0, h0, x1, y1, w1, h1){
+        var x = Math.max(x0,x1);
+        var y = Math.max(y0,y1)
+        return !boxBox.apply(null, arguments) ? null :
+            { x : x
+            , y : y
+            , w : Math.min(x0 + w0, x1 + w1) - x
+            , h : Math.min(y0 + h0, y1 + h1) - y
+            }
+    }
+    function boxBoxShortestWay(x0, y0, w0, h0, x1, y1, w1, h1){
+        let x,y;
+        if(x0>x1+w1){
+            x = x0 - (x1+w1);
+        } else if(x1>x0+w0){
+            x = x1 - (x0+w0);
+        } else {
+            x=0;
+        }
+        if(y0>y1+y1){
+            y = y0 - (y1+y1);
+        } else if(y1>y0+y0){
+            y = y1 - (y0+y0);
+        } else {
+            y=0;
+        }
+        return {x : x, y : y};
+        
+    }
+    function boxBoxSideOfCollision(x0, y0, w0, h0, x1, y1, w1, h1, dx, dy){
+        let x,y;
+        if(!dy){
+            x = dx;
+        }
+        else if(!dx){
+            y = dy;
+        }
+        else{
+            let shortest = boxBoxShortestWay.apply(null,arguments);
+            let horizontal_collision = shortest.x/dx < shortest.y/dy;
+            x = horizontal_collision * Math.sign(dx);
+            y = !horizontal_collision * Math.sign(dy);            
+        }
+        return{x : x, y : y};
+    }
     mod.boxPoint = boxPoint;
     mod.boxBox = boxBox;
     mod.lineLine = lineLine;
     mod.boxLine = boxLine;
     mod.boxBoxMoving = boxBoxMoving;
+    mod.boxBoxSideOfCollision = boxBoxSideOfCollision;
 	
 	return mod;
 })(Mocho.Collision||{});

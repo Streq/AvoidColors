@@ -28,7 +28,19 @@ var Game = (function(mod){
 																   ,w.x,w.y,w.w,w.h
 																   ,-d.vx * dt, -d.vy * dt))
 										{
-											if(d.y<w.y&&d.vy>0){//TODO: fix this dumbass logic
+											/*
+                                            var side = Mocho.Collision.boxBoxSideOfCollision
+                                                ( d.x-d.vx * dt, d.y-d.vy * dt, d.w,d.h
+                                                , w.x, w.y, w.w, w.h
+                                                , d.vx * dt, d.vy * dt
+                                                );
+                                            
+                                            if(side.x>0){d.x = w.x-d.w; d.vx=0;}
+                                            if(side.x<0){d.x = w.x+w.w; d.vx=0;}
+                                            if(side.y>0){d.y = w.y-d.h; d.vy=0; d.floored = true;}
+                                            if(side.y<0){d.y = w.y+w.h; d.vy=0;}
+                                            */
+                                            if(d.y<w.y&&d.vy>0){//TODO: fix this dumbass logic
 												d.y = w.y-d.h;
 												d.vy = 0;
 												d.floored = true;
