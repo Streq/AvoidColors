@@ -9,12 +9,19 @@ Mocho.Collision = (function(mod){
         );
     }
     
+	function segmentSegment(x0,w0,x1,w1){
+		return (
+			!(x0 + w0 < x1) &&
+			!(x1 + w1 < x0)
+		);
+	}
+	
     function boxBox(x0, y0, w0, h0, x1, y1, w1, h1){
         return (
-            !(x0 + w0 < x1) &&
-            !(x1 + w1 < x0) &&
-            !(y0 + h0 < y1) &&
-            !(y1 + h1 < y0)
+			!(x0 + w0 < x1) &&
+			!(x1 + w1 < x0) &&
+			!(y0 + h0 < y1) &&
+			!(y1 + h1 < y0)
         );
     }
     
@@ -98,23 +105,17 @@ Mocho.Collision = (function(mod){
             , h : Math.min(y0 + h0, y1 + h1) - y
             }
     }
+	function segmentDistance(x0,w0,x1,w1){
+		return (
+			+(x1 > x0 + w0) * (x1 - x0 - w0)
+			-(x0 > x1 + w1) * (x0 - x1 - w1)
+		);
+	}
     function boxBoxShortestWay(x0, y0, w0, h0, x1, y1, w1, h1){
-        let x,y;
-        if(x0>x1+w1){
-            x = x0 - (x1+w1);
-        } else if(x1>x0+w0){
-            x = x1 - (x0+w0);
-        } else {
-            x=0;
-        }
-        if(y0>y1+y1){
-            y = y0 - (y1+y1);
-        } else if(y1>y0+y0){
-            y = y1 - (y0+y0);
-        } else {
-            y=0;
-        }
-        return {x : x, y : y};
+        return {
+			x : segmentDistance(x0,w0,x1,w1),
+			y : segmentDistance(y0,h0,y1,h1)
+		};
         
     }
     function boxBoxSideOfCollision(x0, y0, w0, h0, x1, y1, w1, h1, dx, dy){

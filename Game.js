@@ -20,7 +20,7 @@ var Game = (function(mod){
 	var walls = 
         [ [0 ,12, type_wall]
         , [1 ,12, type_wall]
-        , [2 ,12, type_wall]
+        , [2 ,12, type_wall], [2 , 9, type_wall]
         , [3 ,12, type_wall]
         , [4 ,12, type_wall]
         , [5 ,12, type_wall]
@@ -45,12 +45,12 @@ var Game = (function(mod){
         , [6 ,19]
         , [7 ,19] 
         , [8 ,19]
-        , [9 ,19], [9 ,8 ,type_in],[9 ,7] 
-        , [10,19], [10,8 ,type_in],[10,7]
-        , [11,19], [11,8 ,type_in],[11,7]
-		, [12,19], [12,8 ,type_in],[12,7]
-        , [13,19], [13,8 ,type_in],[13,7]
-        , [14,19], [14,8 ,type_in],[14,7]
+        , [9 ,19], [9 , 8,type_in], [9 ,7] 
+        , [10,19], [10, 8,type_in], [10,7]
+        , [11,19], [11, 8,type_in], [11,7]
+		, [12,19], [12, 8,type_in], [12,7]
+        , [13,19], [13, 8,type_in], [13,7]
+        , [14,19], [14, 8,type_in], [14,7]
         , [15,19]
         , [16,19]
         , [17,19]
@@ -67,7 +67,7 @@ var Game = (function(mod){
         , [28,19]
         , [29,19]
         ];
-    var player = [2,11];
+    var player = [2,5];
 	Game.reset = function(){
 		pj.x = player[0]*su;
 		pj.y = player[1]*su;
@@ -110,7 +110,7 @@ var Game = (function(mod){
 			if(s[Game.Input.BUTTONS.RESET][0]){
 				Game.reset();
 			}
-			world.update(dt);
+			world.update(dt*0.25);
 		},
 		function(){
 			ctx.fillStyle="#000000";
