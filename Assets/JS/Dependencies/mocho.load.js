@@ -15,6 +15,17 @@ var Mocho = (function(mod){
 		});
 	}
 
+	function loadScriptSync(src, onload){
+		onload = onload || (x => x);
+		return new Promise((resolve) => {
+			var script = document.createElement("script");
+			script.async = false;
+			script.onload = () => resolve(onload());
+			script.src = src;
+			document.head.appendChild(script);
+		});
+	}
+
 	/**
 	 * Load some dang scripts in the specified order;
 	 * @param {String[]} srcs - the scripts paths,
@@ -26,6 +37,12 @@ var Mocho = (function(mod){
 			srcs.reduce((p, src) => p.then(() => loadScript(src)), Promise.resolve())
 				.then(() => resolve(onload()));
 		});
+	}
+	
+	function loadScriptsSync(srcs, onload){
+		onload = onload || (x => x);
+		return Promise.all(srcs.map(src =>loadScriptSync(src)))
+				.then(() => onload());
 	}
 	
 	/**
@@ -52,8 +69,7 @@ var Mocho = (function(mod){
 		onload = onload || (x => x);
 		var imgs = {};
 		function loadAndAdd(src){
-			return loadImage(src)
-				.then(img => {imgs[src] = img;});
+			return loadImage(src, img => {imgs[src] = img;});
 		}
 		return Promise.all(srcs.map(loadAndAdd))
 			.then(() => onload(imgs));
