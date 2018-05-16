@@ -110,7 +110,7 @@ var Game = (function(mod){
 			if(s[Game.Input.BUTTONS.RESET][0]){
 				Game.reset();
 			}
-			world.update(dt*0.25);
+			world.update(dt);
 		},
 		function(){
 			ctx.fillStyle="#000000";
