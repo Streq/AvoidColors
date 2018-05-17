@@ -1,7 +1,7 @@
 var Mocho = (function(mod){
 	
 	/**
-	 * Load some dang script;
+	 * Load some dang script asyncronously;
 	 * @param {String} src - the script path,
 	 * @param {function()} [onload] - function to execute once the script is loaded.
 	 */
@@ -14,7 +14,12 @@ var Mocho = (function(mod){
 			document.head.appendChild(script);
 		});
 	}
-
+	
+	/**
+	 * Load some dang script synchronously;
+	 * @param {String} src - the script path,
+	 * @param {function()} [onload] - function to execute once the script is loaded.
+	 */
 	function loadScriptSync(src, onload){
 		onload = onload || (x => x);
 		return new Promise((resolve) => {
@@ -27,11 +32,12 @@ var Mocho = (function(mod){
 	}
 
 	/**
-	 * Load some dang scripts in the specified order;
+	 * Load some dang scripts asynchronously in the specified order;
+	 * Each script will start loading only after the previous one has finished;
 	 * @param {String[]} srcs - the scripts paths,
 	 * @param {function()} [onload] - function to execute once every script is loaded.
 	 */
-	function loadScripts(srcs, onload){
+	function loadScriptsAsyncChained(srcs, onload){
 		onload = onload || (x => x);
 		return new Promise((resolve) => {
 			srcs.reduce((p, src) => p.then(() => loadScript(src)), Promise.resolve())
@@ -39,7 +45,24 @@ var Mocho = (function(mod){
 		});
 	}
 	
-	function loadScriptsSync(srcs, onload){
+	/**
+	 * Load some dang scripts asynchronously;
+	 * Scripts will load and run in any order;
+	 * @param {String[]} srcs - the scripts paths,
+	 * @param {function()} [onload] - function to execute once every script is loaded.
+	 */
+	function loadScriptsAsync(srcs, onload){
+		onload = onload || (x => x);
+		return Promise.all(srcs.map(src=>loadScript(src))).then(onload);
+	}
+	
+	/**
+	 * Load some dang scripts synchronously;
+	 * Scripts will load in any order but run in the specified order;
+	 * @param {String[]} srcs - the scripts paths,
+	 * @param {function()} [onload] - function to execute once every script is loaded.
+	 */
+	function loadScripts(srcs, onload){
 		onload = onload || (x => x);
 		return Promise.all(srcs.map(src =>loadScriptSync(src)))
 				.then(() => onload());
@@ -96,6 +119,9 @@ var Mocho = (function(mod){
 			.then(json => onload(json));
 	}
 	
+	mod.loadScripts = loadScripts;
+	mod.loadScriptsAsyncChained = loadScriptsAsyncChained;
+	mod.loadScriptsAsync = loadScriptsAsync;
 	mod.loadScripts = loadScripts;
 	mod.loadScript = loadScript;
 	mod.loadImage = loadImage;
