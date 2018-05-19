@@ -52,10 +52,10 @@ Game.Managers = (function(mod){
 			render(instance,ctx){
 				let dir = instance.direction;
 				ctx.scale(dir,1);
-				let pos = instance.x * dir + 8*(dir-1);
+				let pos = (instance.x-instance.ox) * dir + 8*(dir-1);
 				this.animation
 					.getCurrentFrame()
-					.draw(ctx,Math.floor(pos),Math.floor(instance.y));
+					.draw(ctx,Math.floor(pos),Math.floor(instance.y-instance.oy));
 				ctx.setTransform(1, 0, 0, 1, 0, 0);
 			}
 			
@@ -145,7 +145,7 @@ Game.Managers = (function(mod){
 						constructor(){
 							super();
 							this.animation = new Mocho.Animation(ANIMATION.AIRBORN,frameTime);
-							this.jumps = Infinity;	
+							this.jumps = 1;	
 						}
 						update(instance, dt){
 							this.animation.update(dt);
@@ -198,10 +198,11 @@ Game.Managers = (function(mod){
 			
 			step(dt){
 				this.state.update(this,dt);
+				this.vy += this.fallAcceleration * dt;
+				
 				this.x += this.vx * dt;
 				this.y += this.vy * dt;
 				//if(this.vy <= 0 && this.vy > -this.fallAcceleration){console.log(this.y);}
-				this.vy += this.fallAcceleration * dt;
 			}
 			
 			render(ctx){
@@ -217,8 +218,10 @@ Game.Managers = (function(mod){
 		Dude.prototype.speed = 100/1000;
 		Dude.prototype.jumpSpeed = 300/1000;
 		Dude.prototype.fallAcceleration = 1/1000;
-		Dude.prototype.w = 16;
-		Dude.prototype.h = 13;
+		Dude.prototype.ox = 3;
+		Dude.prototype.oy = 3;
+		Dude.prototype.w = 10;
+		Dude.prototype.h = 10;
 		return Dude;
 	})();
 	function DudeManager(){

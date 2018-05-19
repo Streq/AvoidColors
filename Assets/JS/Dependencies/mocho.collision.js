@@ -129,7 +129,7 @@ Mocho.Collision = (function(mod){
         }
         else{
             let shortest = boxBoxShortestWay.apply(null,arguments);
-            let horizontal_collision = !shortest.y || shortest.x/dx > shortest.y/dy;
+            let horizontal_collision = shortest.x/dx > shortest.y/dy;
             x = horizontal_collision * Math.sign(dx);
             y = !horizontal_collision * Math.sign(dy);            
         }
