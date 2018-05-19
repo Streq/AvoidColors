@@ -1,3 +1,4 @@
+"use strict";
 var Mocho=Mocho||{};
 Mocho.Collision = (function(mod){
     function boxPoint(x,y,w,h,px,py){
@@ -18,11 +19,11 @@ Mocho.Collision = (function(mod){
 	
     function boxBox(x0, y0, w0, h0, x1, y1, w1, h1){
         return (
-			!(x0 + w0 < x1) &&
-			!(x1 + w1 < x0) &&
-			!(y0 + h0 < y1) &&
-			!(y1 + h1 < y0)
-        );
+			(x0 + w0 > x1) && 
+			(x1 + w1 > x0) && 
+			(y0 + h0 > y1) && 
+			(y1 + h1 > y0)
+		);
     }
     
     function boxLine(x, y, w, h, a, b, c, d){
@@ -91,7 +92,7 @@ Mocho.Collision = (function(mod){
             boxBoxMovingBroad.apply(null, arguments) && //if bounding box doesn't collide it don't matter
             (
                 boxBox.apply(null, arguments) || //if box collides at final position then there's collision 
-                boxLine(x1-x0-w0, y1-y0-h0, w0+w1, h0+h1, 0, 0, dx, dy)//actual calc thx to my man minkowski
+                boxLine(x1-x0-w0, y1-y0-h0, w0+w1, h0+h1, 0, 0, -dx, -dy)//actual calc thx to my man minkowski
             )
         );
     }
@@ -128,7 +129,7 @@ Mocho.Collision = (function(mod){
         }
         else{
             let shortest = boxBoxShortestWay.apply(null,arguments);
-            let horizontal_collision = shortest.x/dx < shortest.y/dy;
+            let horizontal_collision = !shortest.y || shortest.x/dx > shortest.y/dy;
             x = horizontal_collision * Math.sign(dx);
             y = !horizontal_collision * Math.sign(dy);            
         }

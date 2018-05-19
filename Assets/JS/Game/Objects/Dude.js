@@ -1,3 +1,4 @@
+"use strict";
 var Game = Game||{};
 
 Game.Managers = (function(mod){
@@ -144,7 +145,7 @@ Game.Managers = (function(mod){
 						constructor(){
 							super();
 							this.animation = new Mocho.Animation(ANIMATION.AIRBORN,frameTime);
-							this.jumps = 1;	
+							this.jumps = Infinity;	
 						}
 						update(instance, dt){
 							this.animation.update(dt);
@@ -199,6 +200,7 @@ Game.Managers = (function(mod){
 				this.state.update(this,dt);
 				this.x += this.vx * dt;
 				this.y += this.vy * dt;
+				//if(this.vy <= 0 && this.vy > -this.fallAcceleration){console.log(this.y);}
 				this.vy += this.fallAcceleration * dt;
 			}
 			
@@ -217,7 +219,6 @@ Game.Managers = (function(mod){
 		Dude.prototype.fallAcceleration = 1/1000;
 		Dude.prototype.w = 16;
 		Dude.prototype.h = 13;
-		
 		return Dude;
 	})();
 	function DudeManager(){

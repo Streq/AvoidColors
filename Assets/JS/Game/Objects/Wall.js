@@ -1,3 +1,4 @@
+"use strict";
 var Game = Game||{};
 
 Game.Managers = (function(mod){

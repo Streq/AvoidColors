@@ -1,3 +1,4 @@
+"use strict";
 var Game = (function(mod){
 	var canvas = mod.canvas;
 	var ctx = mod.ctx;
@@ -91,10 +92,11 @@ var Game = (function(mod){
             onload();
 		},
 		function(dt){
+			let jumpKey, s, dir;
 			Game.Input.update();
             //InputController.update();
-            let s = Game.Input.state.s;
-            let dir = s[Game.Input.BUTTONS.RIGHT][0] - s[Game.Input.BUTTONS.LEFT][0];
+            s = Game.Input.state.s;
+            dir = s[Game.Input.BUTTONS.RIGHT][0] - s[Game.Input.BUTTONS.LEFT][0];
             switch(dir){
                 case -1:    
                     pj.moveLeft();
@@ -116,9 +118,9 @@ var Game = (function(mod){
 			ctx.fillStyle="#000000";
 			ctx.fillRect(0, 0, canvas.width, canvas.height);
 			world.render(ctx);
-		}
+		},60
 	);
-
+	//loop.timeFactor = 0.1;
 	mod.run = function(){
 		loop.run();
 	};

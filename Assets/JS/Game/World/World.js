@@ -1,3 +1,4 @@
+"use strict";
 var Game = (function(mod){
 	function updateManagers(dt){
 		this.managers.forEach(
@@ -15,23 +16,33 @@ var Game = (function(mod){
 			)
 		)
 		{
-			if(dude.y<wall.y && dude.vy>0){//TODO: fix this dumbass logic
-				dude.y = wall.y-dude.h;
-				dude.vy = 0;
-				dude.floored = true;
-			}
-			/*
+			let dx = dude.vx * dt;
+			let dy = dude.vy * dt;
+			
 			var side = Mocho.Collision.boxBoxSideOfCollision
-				( d.x-d.vx * dt, d.y-d.vy * dt, d.w,d.h
-				, w.x, w.y, w.w, w.h
-				, d.vx * dt, d.vy * dt
+				( dude.x - dx, dude.y - dy, dude.w, dude.h
+				, wall.x, wall.y, wall.w, wall.h
+				, dx , dy
 				);
 
-			if(side.x>0){d.x = w.x-d.w; d.vx=0;}
-			if(side.x<0){d.x = w.x+w.w; d.vx=0;}
-			if(side.y>0){d.y = w.y-d.h; d.vy=0; d.floored = true;}
-			if(side.y<0){d.y = w.y+w.h; d.vy=0;}
-			*/
+			const skin = 0.00;
+			//right
+			if(side.x>0){
+				dude.x = wall.x-dude.w -skin; dude.vx=0;
+			}
+			//left
+			if(side.x<0){
+				dude.x = wall.x+wall.w +skin; dude.vx=0;
+			}
+			//top
+			if(side.y>0){
+				dude.y = wall.y-dude.h -skin; dude.vy=0; dude.floored = true;
+			}
+			//bot
+			if(side.y<0){
+				dude.y = wall.y+wall.h +skin; dude.vy=0;
+			}
+			
 		}
 	}
 	function checkDudeLava(dude,lava,dt){

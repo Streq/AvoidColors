@@ -1,3 +1,4 @@
+"use strict";
 var Game = (function(smod){
 	smod.Input = (function(mod){
 		mod.BUTTONS = {

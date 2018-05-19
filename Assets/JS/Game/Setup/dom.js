@@ -1,3 +1,4 @@
+"use strict";
 var Game = ((mod)=>{
     let canvas = document.createElement("canvas");
     canvas.width = 480;
