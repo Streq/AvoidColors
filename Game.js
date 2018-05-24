@@ -152,6 +152,7 @@ var Game = (function(mod){
 	mod.run = function(){
 		loop.run();
 	};
+	mod.loop=loop;
 
 	return mod;
 })(Game||{})
