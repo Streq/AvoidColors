@@ -4,6 +4,10 @@ var Game = (function(mod){
 	var ctx = mod.ctx;
 	
     var world = new Game.World();
+	
+	world.PortalManager=new Game.Managers.PortalManager();
+	world.managers.push(world.PortalManager);
+	
 	world.DudeManager = new Game.Managers.DudeManager();
 	world.managers.push(world.DudeManager);
 	
@@ -12,6 +16,7 @@ var Game = (function(mod){
 	
 	world.LavaManager=new Game.Managers.LavaManager();
 	world.managers.push(world.LavaManager);
+	
 	
     var su = 16;//space unit
 	
@@ -96,6 +101,7 @@ var Game = (function(mod){
         , [7 , 7]
         
         ];
+	var portal = [2,8];
     var player = [9,11];
 	Game.reset = function(){
 		pj.x = player[0]*su;
@@ -104,9 +110,11 @@ var Game = (function(mod){
 		pj.vy = 0;
 	}
 	var pj;
+	var prt;
     var loop = new Mocho.Loop(
 		function(onload){
 			pj = world.DudeManager.create(player[0]*su,player[1]*su);
+			prt = world.PortalManager.create(portal[0]*su,portal[1]*su);
 			walls.forEach(
                 function(e){
                     world.WallManager.create(e[0]*su,e[1]*su,e[2]);

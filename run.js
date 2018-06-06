@@ -26,6 +26,7 @@ var Game = {};
 				[ 'Wall.js'
 				, 'Lava.js'
 				, 'Dude.js'
+				, 'Portal.js'
 				].map(function(e){return "Assets/JS/Game/Objects/"+e;})
 			)
 			.concat(
@@ -55,5 +56,4 @@ var Game = {};
 	script.onload = loadTheFrickinGame;
 	script.src = "Assets/JS/Dependencies/mocho.load.js";
 	document.head.appendChild(script);
-	
 })();
