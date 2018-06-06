@@ -1,0 +1,70 @@
+[
+	{
+		"meta": {
+			"image": "tiles.png"
+		},
+		"frames": {
+			"wall.png":{
+				"frame": {"x":0,"y":0,"w":16,"h":16}
+			},
+			"platform.png":{
+				"frame": {"x":16,"y":0,"w":16,"h":16}
+			},
+			"spikes.png":{
+				"frame": {"x":144,"y":16,"w":16,"h":16}
+			},
+			"portal_0.png":{
+				"frame": {"x":0,"y":32,"w":16,"h":16}
+			},
+			"portal_1.png":{
+				"frame": {"x":16,"y":32,"w":16,"h":16}
+			},
+			"portal_2.png":{
+				"frame": {"x":32,"y":32,"w":16,"h":16}
+			},
+			"portal_3.png":{
+				"frame": {"x":48,"y":32,"w":16,"h":16}
+			},
+			"portal_4.png":{
+				"frame": {"x":64,"y":32,"w":16,"h":16}
+			},
+			"portal_5.png":{
+				"frame": {"x":80,"y":32,"w":16,"h":16}
+			},
+			"portal_6.png":{
+				"frame": {"x":96,"y":32,"w":16,"h":16}
+			},
+			"portal_7.png":{
+				"frame": {"x":112,"y":32,"w":16,"h":16}
+			}
+		}
+	}
+	,{
+		"meta": {
+			"image": "sheet2.png"
+		},
+		"frames": {
+			"dude_standing.png":{
+				"frame": {"x":0,"y":0,"w":16,"h":16}
+			},
+			"dude_running_0.png":{
+				"frame": {"x":0,"y":112,"w":16,"h":16}
+			},
+			"dude_running_1.png":{
+				"frame": {"x":16,"y":112,"w":16,"h":16}
+			},
+			"dude_running_2.png":{
+				"frame": {"x":32,"y":112,"w":16,"h":16}
+			},
+			"dude_running_3.png":{
+				"frame": {"x":48,"y":112,"w":16,"h":16}
+			},
+			"dude_running_4.png":{
+				"frame": {"x":64,"y":112,"w":16,"h":16}
+			},
+			"dude_running_5.png":{
+				"frame": {"x":80,"y":112,"w":16,"h":16}
+			}
+		}
+	}
+]

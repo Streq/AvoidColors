@@ -1,0 +1,26 @@
+{
+	"portal": {
+		"type": "repeat",
+		"frames": [
+			"portal_0.png",
+			"portal_1.png",
+			"portal_2.png",
+			"portal_3.png",
+			"portal_4.png",
+			"portal_5.png",
+			"portal_6.png",
+			"portal_7.png"
+		]
+	},
+	"dude_running": {
+		"type": "repeat",
+		"frames": [
+			"dude_running_0.png",
+			"dude_running_1.png",
+			"dude_running_2.png",
+			"dude_running_3.png",
+			"dude_running_4.png",
+			"dude_running_5.png"
+		]
+	}
+}
