@@ -1,6 +1,6 @@
 "use strict";
-var Game = Game||{};
-
+var Game = require("./../Global/global");
+var Mocho = require("./../../Dependencies/Mocho");
 Game.Managers = (function(mod){
 	class WallManager{
 		constructor(){
@@ -49,13 +49,13 @@ Game.Managers = (function(mod){
 		return ret;
 	}
 	var sprites = []
-	sprites[WallManager.TYPE.BLOCK] = new Mocho.Sprite( Game.images.tiles
+	sprites[WallManager.TYPE.BLOCK] = new Mocho.animation.Sprite( Game.images.tiles
 		 , 0, 0, 16, 16
 		 , 0, 0, 16, 16);
-	sprites[WallManager.TYPE.TILE] = new Mocho.Sprite( Game.images.tiles
+	sprites[WallManager.TYPE.TILE] = new Mocho.animation.Sprite( Game.images.tiles
 		 , 16, 0, 16, 16
 		 , 0, 0, 16, 16);
-	sprites[WallManager.TYPE.LITTLE_BLOCK] = new Mocho.Sprite( Game.images.tiles
+	sprites[WallManager.TYPE.LITTLE_BLOCK] = new Mocho.animation.Sprite( Game.images.tiles
 		 , 16*8, 0, 16, 16
 		 , 0, 0, 16, 16);
 	

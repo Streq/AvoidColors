@@ -1,6 +1,6 @@
 "use strict";
-var Game = Game||{};
-
+var Game = require("./../Global/global");
+var Mocho = require("./../../Dependencies/Mocho");
 Game.Managers = (function(mod){
 	class LavaManager{
 		constructor(){
@@ -46,11 +46,11 @@ Game.Managers = (function(mod){
 	
 	var sprites = [];
 	sprites[LavaManager.TYPE.INNER] =
-		new Mocho.Sprite( Game.images.tiles
+		new Mocho.animation.Sprite( Game.images.tiles
 						 , 16, 16, 16, 16
 						 , 0, 0, 16, 16);
 	sprites[LavaManager.TYPE.SURFACE] =
-		new Mocho.Sprite( Game.images.tiles
+		new Mocho.animation.Sprite( Game.images.tiles
 						 , 0, 16, 16, 16
 						 , 0, -3, 16, 16);
 	

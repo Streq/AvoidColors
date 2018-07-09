@@ -1,5 +1,5 @@
 "use strict";
-var Game = Game||{};
+var Game = require("./../Global/global");
 Game.images = (function(mod){
 	return mod;
 })(Game.images||{})

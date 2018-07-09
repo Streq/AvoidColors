@@ -1,4 +1,6 @@
 "use strict";
+var Game = require("./../Global/global");
+var Mocho = require("../../Dependencies/Mocho")
 var Game = (function(smod){
 	smod.Input = (function(mod){
 		mod.BUTTONS = {
@@ -22,7 +24,7 @@ var Game = (function(smod){
 		map0[90] = mod.BUTTONS.JUMP;
         map0[82] = mod.BUTTONS.RESET;
 		
-		mod.eventQueue = Mocho.makeEventQueue(); 
+		mod.eventQueue = Mocho.input.makeEventQueue(); 
         
         let filterFactory = function(pressed,player){
             return function(event){
@@ -39,8 +41,8 @@ var Game = (function(smod){
                 return null;
             };
         };
-        Mocho.addListener(mod.eventQueue, Game.canvas,"keydown", filterFactory(true, 0));
-        Mocho.addListener(mod.eventQueue, Game.canvas,"keyup", filterFactory(false, 0));
+        mod.eventQueue.listen(Game.canvas, "keydown", filterFactory(true, 0));
+        mod.eventQueue.listen(Game.canvas, "keyup", filterFactory(false, 0));
         
 		
         mod.state = new mod.State();

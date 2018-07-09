@@ -1,6 +1,6 @@
 "use strict";
-var Game = Game||{};
-
+var Game = require("./../Global/global");
+var Mocho = require("./../../Dependencies/Mocho");
 Game.Managers = (function(mod){
 
 	var Dude = (function(){
@@ -11,7 +11,7 @@ Game.Managers = (function(mod){
         
         var sheet = Game.images.sheet2;
         var tileset = 
-            new Mocho.TileSheet
+            new Mocho.animation.TileSheet
                 ( sheet
                 , sheet.width
                 , sheet.height
@@ -22,21 +22,21 @@ Game.Managers = (function(mod){
         var frameTime = 150;
         var ANIMATION = 
             { IDLE : 
-                new Mocho.AnimationFrameSet
+                new Mocho.animation.AnimationFrameSet
                     ( tileset
                     , 0 + 4*0
                     , 1
                     , "repeat"
                     )
             , RUNNING :
-                new Mocho.AnimationFrameSet
+                new Mocho.animation.AnimationFrameSet
                     ( tileset
                     , 0 + 8*7//, 0 + 4*1
                     , 6//, 4
                     , "repeat"
                     )
 			, AIRBORN : 
-			 	new Mocho.AnimationFrameSet
+			 	new Mocho.animation.AnimationFrameSet
 			 		( tileset
 					, 1 + 8*2//, 1 + 4*2
 					, 1
@@ -72,7 +72,7 @@ Game.Managers = (function(mod){
 					class extends State{
 						constructor(){
 							super();
-							this.animation = new Mocho.Animation(ANIMATION.IDLE,frameTime);
+							this.animation = new Mocho.animation.Animation(ANIMATION.IDLE,frameTime);
 						}
 						update(instance, dt){
 							this.animation.update(dt);
@@ -105,7 +105,7 @@ Game.Managers = (function(mod){
 					class extends State{
 						constructor(){
 							super();
-							this.animation = new Mocho.Animation(ANIMATION.RUNNING,frameTime);
+							this.animation = new Mocho.animation.Animation(ANIMATION.RUNNING,frameTime);
 							this.keepRunning = true;
 						}
 						update(instance, dt){
@@ -144,7 +144,7 @@ Game.Managers = (function(mod){
 					class extends State{
 						constructor(){
 							super();
-							this.animation = new Mocho.Animation(ANIMATION.AIRBORN,frameTime);
+							this.animation = new Mocho.animation.Animation(ANIMATION.AIRBORN,frameTime);
 							this.jumps = 1;	
 						}
 						update(instance, dt){

@@ -1,4 +1,6 @@
 "use strict";
+var Game = require("../Global/global");
+var Mocho = require("../../Dependencies/Mocho")
 var Game = (function(mod){
 	function updateManagers(dt){
 		this.managers.forEach(
@@ -9,7 +11,7 @@ var Game = (function(mod){
 	}
 	
 	function checkDudeWall(dude,wall,dt){
-		if(Mocho.Collision.boxBoxMoving
+		if(Mocho.collision.boxBoxMoving
 			( dude.x, dude.y, dude.w, dude.h
 			, wall.x, wall.y, wall.w, wall.h
 			, -dude.vx * dt, -dude.vy * dt
@@ -19,7 +21,7 @@ var Game = (function(mod){
 			let dx = dude.vx * dt;
 			let dy = dude.vy * dt;
 			
-			var side = Mocho.Collision.boxBoxSideOfCollision
+			var side = mocho.collision.boxBoxSideOfCollision
 				( dude.x - dx, dude.y - dy, dude.w, dude.h
 				, wall.x, wall.y, wall.w, wall.h
 				, dx , dy
@@ -49,7 +51,7 @@ var Game = (function(mod){
 	function checkDudeWallH(dude,wall,dt){
 		const skin = 0.00;
 		const freedom = 0.00;
-		if(Mocho.Collision.boxBoxMoving
+		if(Mocho.collision.boxBoxMoving
 			( dude.x, dude.y, dude.w, dude.h
 			, wall.x+freedom, wall.y, wall.w-freedom*2, wall.h
 			, -dude.vx * dt, -dude.vy * dt
@@ -59,7 +61,7 @@ var Game = (function(mod){
 			let dx = dude.vx * dt;
 			let dy = dude.vy * dt;
 			
-			var side = Mocho.Collision.boxBoxSideOfCollision
+			var side = Mocho.collision.boxBoxSideOfCollision
 				( dude.x - dx, dude.y - dy, dude.w, dude.h
 				, wall.x, wall.y, wall.w, wall.h
 				, dx , dy
@@ -79,7 +81,7 @@ var Game = (function(mod){
 	function checkDudeWallV(dude,wall,dt){
 		const skin = 0.00;
 		const freedom = 0.00;
-		if(Mocho.Collision.boxBoxMoving
+		if(Mocho.collision.boxBoxMoving
 			( dude.x, dude.y, dude.w, dude.h
 			, wall.x, wall.y+freedom, wall.w, wall.h-freedom*2
 			, -dude.vx * dt, -dude.vy * dt
@@ -89,7 +91,7 @@ var Game = (function(mod){
 			let dx = dude.vx * dt;
 			let dy = dude.vy * dt;
 			
-			var side = Mocho.Collision.boxBoxSideOfCollision
+			var side = Mocho.collision.boxBoxSideOfCollision
 				( dude.x - dx, dude.y - dy, dude.w, dude.h
 				, wall.x, wall.y, wall.w, wall.h
 				, dx , dy
@@ -108,7 +110,7 @@ var Game = (function(mod){
 	}
 	
 	function checkDudeLava(dude,lava,dt){
-		if(Mocho.Collision.boxBoxMoving
+		if(Mocho.collision.boxBoxMoving
 			( dude.x, dude.y, dude.w, dude.h
 			, lava.x, lava.y, lava.w, lava.h
 			, -dude.vx * dt, -dude.vy * dt)

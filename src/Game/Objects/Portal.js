@@ -1,6 +1,6 @@
 "use strict";
-var Game = Game||{};
-
+var Game = require("./../Global/global");
+var Mocho = require("./../../Dependencies/Mocho");
 Game.Managers = (function(mod){
 	class PortalManager{
 		constructor(){
@@ -26,20 +26,20 @@ Game.Managers = (function(mod){
 	
 	var sheet = Game.images.tiles;
 	var tileset = 
-		new Mocho.TileSheet
+		new Mocho.animation.TileSheet
 			( sheet
 			, sheet.width
 			, sheet.height
 			, 16
 			, 16
 			);
-	var animationfs = new Mocho.AnimationFrameSet
+	var animationfs = new Mocho.animation.AnimationFrameSet
 			( tileset
 			, 0 + 2*10
 			, 8
 			, "repeat"
 			);
-	var animation = new Mocho.Animation(animationfs,100);
+	var animation = new Mocho.animation.Animation(animationfs,100);
 	function canvas2dContextDraw(ctx){
 		let sprite = animation.getCurrentFrame();
 		this.instances.forEach(

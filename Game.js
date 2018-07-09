@@ -1,4 +1,6 @@
 "use strict";
+var Mocho = require("./src/Dependencies/Mocho");
+var Game = require("./src/Game/Global/global");
 var Game = (function(mod){
 	var canvas = mod.canvas;
 	var ctx = mod.ctx;
@@ -111,21 +113,20 @@ var Game = (function(mod){
 	}
 	var pj;
 	var prt;
-    var loop = new Mocho.Loop(
-		function(onload){
+    var loop = new Mocho.loop.Loop(
+		function(){
 			pj = world.DudeManager.create(player[0]*su,player[1]*su);
 			prt = world.PortalManager.create(portal[0]*su,portal[1]*su);
 			walls.forEach(
                 function(e){
                     world.WallManager.create(e[0]*su,e[1]*su,e[2]);
                 }
-            )
+            );
 			lavas.forEach(
                 function(e){
                     world.LavaManager.create(e[0]*su,e[1]*su,e[2]);
                 }
-            )
-            onload();
+            );
 		},
 		function(dt){
 			let jumpKey, s, dir;
