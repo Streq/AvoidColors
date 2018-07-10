@@ -1,0 +1,12 @@
+"use strict";
+require("./Setup/dom");
+require("./Input/state");
+require("./Input/input");
+require("./Resources/ImageHolder");
+require("./Objects/Wall");
+require("./Objects/Lava");
+require("./Objects/Dude");
+require("./Objects/Portal");
+require("./World/World");
+require("./run");
+module.exports = require("./Global/global");

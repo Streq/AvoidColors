@@ -1,6 +1,6 @@
 "use strict";
-var Mocho = require("./src/Dependencies/Mocho");
-var Game = require("./src/Game/Global/global");
+var Mocho = require("../Dependencies/Mocho");
+var Game = require("./Global/global");
 var Game = (function(mod){
 	var canvas = mod.canvas;
 	var ctx = mod.ctx;
