@@ -870,460 +870,464 @@ mod.DBufferQueue = DBufferQueue;
 
 },{}],11:[function(require,module,exports){
 "use strict";
-module.exports = {};
+var mod = module.exports = {};
+mod.BUTTONS = {
+    LEFT : 0,
+    UP : 1,
+    RIGHT : 2,
+    DOWN : 3,
+    JUMP : 4,
+    RESET : 5,
+    SIZE : 6
+    
+};
+
+mod.mappings = [];
+mod.mappings[0] = [];
+let map0 = mod.mappings[0]
+map0[37] = mod.BUTTONS.LEFT;
+map0[38] = mod.BUTTONS.UP;
+map0[39] = mod.BUTTONS.RIGHT;
+map0[40] = mod.BUTTONS.DOWN;
+map0[90] = mod.BUTTONS.JUMP;
+map0[82] = mod.BUTTONS.RESET;
+
 },{}],12:[function(require,module,exports){
 "use strict";
-var Game = require("./../Global/global");
-var Mocho = require("../../Dependencies/Mocho")
-var Game = (function(smod){
-	smod.Input = (function(mod){
-		mod.BUTTONS = {
-			LEFT : 0,
-			UP : 1,
-			RIGHT : 2,
-			DOWN : 3,
-			JUMP : 4,
-			RESET : 5,
-            SIZE : 6
-            
-		};
-		
-		mod.mappings = [];
-        mod.mappings[0] = [];
-        let map0 = mod.mappings[0]
-		map0[37] = mod.BUTTONS.LEFT;
-		map0[38] = mod.BUTTONS.UP;
-		map0[39] = mod.BUTTONS.RIGHT;
-        map0[40] = mod.BUTTONS.DOWN;
-		map0[90] = mod.BUTTONS.JUMP;
-        map0[82] = mod.BUTTONS.RESET;
-		
-		mod.eventQueue = Mocho.input.makeEventQueue(); 
-        
-        let filterFactory = function(pressed,player){
-            return function(event){
-                //si es una tecla configurada retornar esa tecla mapeada
-                let code = map0[event.keyCode];
-                if(code != null){
-                    return {
-                        player : player,
-                        code : code,
-                        pressed : pressed,
-                    };
-                }
-                //si no retornar null
-                return null;
+var Mocho = require("../../Dependencies/Mocho");
+var State = require("./state");
+var Buttons = require("./buttons");
+
+var mod = module.exports = {};
+
+mod.BUTTONS = Buttons.BUTTONS;
+mod.mappings = Buttons.mappings;
+let map0 = mod.mappings[0];
+
+mod.eventQueue = Mocho.input.makeEventQueue(); 
+
+let filterFactory = function(pressed,player){
+    return function(event){
+        //si es una tecla configurada retornar esa tecla mapeada
+        let code = map0[event.keyCode];
+        if(code != null){
+            return {
+                player : player,
+                code : code,
+                pressed : pressed,
             };
-        };
-        mod.eventQueue.listen(Game.canvas, "keydown", filterFactory(true, 0));
-        mod.eventQueue.listen(Game.canvas, "keyup", filterFactory(false, 0));
-        
-		
-        mod.state = new mod.State();
-		
-        function update(){
-            var queue = this.eventQueue;
-			queue.swapBuffer();
-			
-            this.state.stale();
-			this.state.carryFromLastFrame();
-            while(!queue.isEmpty()){
-				var key = queue.dequeue();
-                this.state.update(key.code, key.pressed);
-			}	
-		}
-		
-		mod.update = update;
-		
-		return mod;
-		
-	})(smod.Input||{});
-	return smod;
-})(Game||{})
-},{"../../Dependencies/Mocho":1,"./../Global/global":11}],13:[function(require,module,exports){
-"use strict";
-var Game = require("./../Global/global");
-Game.Input = (function(mod){
-    var State = function(){
-        var SIZE = mod.BUTTONS.SIZE, i = 0;
-        this.s = [];
-        for(; i < SIZE; ++i){
-            this.s[i] = [false, false, false];//framePressed, updated, actuallyPressed
         }
+        //si no retornar null
+        return null;
     };
-    State.prototype.update = function(code, pressed){
-        let key = this.s[code];
-        if(key != null){
-            key[2] = pressed;
-            if(!key[1]){
-                key[1] = key[0]!=pressed;
-                key[0] = pressed;
-            }
-        }
-    };
-    State.prototype.stale = function(){
-        var SIZE = mod.BUTTONS.SIZE, i = 0;
-        for(; i < SIZE; ++i){
-            this.s[i][1] = false;
-        }
-    }
-    State.prototype.carryFromLastFrame = function(){
-        var SIZE = mod.BUTTONS.SIZE, i = 0;
-        for(; i < SIZE; ++i){
-            this.update(i, this.s[i][2]);
-        }
-    }
-    mod.State=State;
-    return mod;
-})(Game.Input||{});
+};
+var dom = require("../Setup/dom");
+mod.eventQueue.listen(dom.canvas, "keydown", filterFactory(true, 0));
+mod.eventQueue.listen(dom.canvas, "keyup", filterFactory(false, 0));
 
-},{"./../Global/global":11}],14:[function(require,module,exports){
+
+mod.state = new State();
+
+function update(){
+    var queue = this.eventQueue;
+    queue.swapBuffer();
+    
+    this.state.stale();
+    this.state.carryFromLastFrame();
+    while(!queue.isEmpty()){
+        var key = queue.dequeue();
+        this.state.update(key.code, key.pressed);
+    }	
+}
+
+mod.update = update;
+},{"../../Dependencies/Mocho":1,"../Setup/dom":20,"./buttons":11,"./state":13}],13:[function(require,module,exports){
 "use strict";
-var Game = require("./../Global/global");
+var Buttons = require("./buttons");
+
+var BUTTON_ENUM_SIZE = Buttons.BUTTONS.SIZE;
+
+var State = function(){
+    var SIZE = BUTTON_ENUM_SIZE, i = 0;
+    this.s = [];
+    for(; i < SIZE; ++i){
+        this.s[i] = [false, false, false];//framePressed, updated, actuallyPressed
+    }
+};
+State.prototype.update = function(code, pressed){
+    let key = this.s[code];
+    if(key != null){
+        key[2] = pressed;
+        if(!key[1]){
+            key[1] = key[0]!=pressed;
+            key[0] = pressed;
+        }
+    }
+};
+State.prototype.stale = function(){
+    var SIZE = BUTTON_ENUM_SIZE, i = 0;
+    for(; i < SIZE; ++i){
+        this.s[i][1] = false;
+    }
+}
+State.prototype.carryFromLastFrame = function(){
+    var SIZE = BUTTON_ENUM_SIZE, i = 0;
+    for(; i < SIZE; ++i){
+        this.update(i, this.s[i][2]);
+    }
+}
+
+module.exports = State;
+
+},{"./buttons":11}],14:[function(require,module,exports){
+"use strict";
 var Mocho = require("./../../Dependencies/Mocho");
-Game.Managers = (function(mod){
+var loadImagesPromise = require("./../Resources/loadImages");
+var Input = require("../Input/input").BUTTONS;
 
-	var Dude = (function(){
-		var DIRECTION = {
-			LEFT : -1,
-			RIGHT : 1,
-		}
-        
-        var sheet = Game.images.sheet2;
-        var tileset = 
-            new Mocho.animation.TileSheet
-                ( sheet
-                , sheet.width
-                , sheet.height
-                , 16
-                , 16
-                );
-        
-        var frameTime = 150;
-        var ANIMATION = 
-            { IDLE : 
-                new Mocho.animation.AnimationFrameSet
-                    ( tileset
-                    , 0 + 4*0
-                    , 1
-                    , "repeat"
-                    )
-            , RUNNING :
-                new Mocho.animation.AnimationFrameSet
-                    ( tileset
-                    , 0 + 8*7//, 0 + 4*1
-                    , 6//, 4
-                    , "repeat"
-                    )
+var Dude = (function(){
+	var DIRECTION = {
+		LEFT : -1,
+		RIGHT : 1,
+	}
+	var frameTime = 150;
+	
+	var sheet,
+		tileset,
+		ANIMATION;
+	loadImagesPromise.then((images)=>{//initialize these mfs after loading is done
+		sheet = images.sheet2;
+		tileset = 
+			new Mocho.animation.TileSheet
+				( sheet
+				, sheet.width
+				, sheet.height
+				, 16
+				, 16
+				);
+		
+		ANIMATION = 
+			{ IDLE : 
+				new Mocho.animation.AnimationFrameSet
+					( tileset
+					, 0 + 4*0
+					, 1
+					, "repeat"
+					)
+			, RUNNING :
+				new Mocho.animation.AnimationFrameSet
+					( tileset
+					, 0 + 8*7//, 0 + 4*1
+					, 6//, 4
+					, "repeat"
+					)
 			, AIRBORN : 
-			 	new Mocho.animation.AnimationFrameSet
-			 		( tileset
+				new Mocho.animation.AnimationFrameSet
+					( tileset
 					, 1 + 8*2//, 1 + 4*2
 					, 1
 					, "repeat"
 					)
-            };
-
-		var Input = Game.Input.BUTTONS;
-		var State = class {
-			constructor(){}
-			
-			update(instance,dt){}
-			render(instance,ctx){
-				let dir = instance.direction;
-				ctx.scale(dir,1);
-				let pos = (instance.x-instance.ox) * dir + 8*(dir-1);
-				this.animation
-					.getCurrentFrame()
-					.draw(ctx,Math.floor(pos),Math.floor(instance.y-instance.oy));
-				ctx.setTransform(1, 0, 0, 1, 0, 0);
-			}
-			
-			moveLeft(instance){}
-			moveRight(instance){}
-			moveUp(instance){}
-			moveDown(instance){}
-			jump(instance){}
-
-		}
-		var STATE = {
-			IDLE : (function(){
-				var m = 
-					class extends State{
-						constructor(){
-							super();
-							this.animation = new Mocho.animation.Animation(ANIMATION.IDLE,frameTime);
-						}
-						update(instance, dt){
-							this.animation.update(dt);
-							instance.vx = (Math.abs(instance.vx) > 0.0001)*(instance.vx * 0.75);
-							if(!instance.floored){
-								instance.state=new STATE.AIRBORN();
-							}
-						}
-						moveLeft(instance){
-							instance.direction = DIRECTION.LEFT;
-							instance.state = new STATE.RUNNING();
-						}
-						moveRight(instance){
-							instance.direction = DIRECTION.RIGHT;
-							instance.state = new STATE.RUNNING();
-						}
-						jump(instance){
-							let st=new STATE.AIRBORN();
-							st.keepRunning = this.keepRunning;
-							instance.state = st;
-							instance.vy = -instance.jumpSpeed;
-						}
-					}
-				
-				return m;
-			})(),
-
-			RUNNING : (function(){
-				var m =
-					class extends State{
-						constructor(){
-							super();
-							this.animation = new Mocho.animation.Animation(ANIMATION.RUNNING,frameTime);
-							this.keepRunning = true;
-						}
-						update(instance, dt){
-							this.animation.update(dt);
-							if(!this.keepRunning){
-								instance.state = new STATE.IDLE();
-							} else {
-								instance.vx = instance.speed * instance.direction;
-							}
-							if(!instance.floored){
-								instance.state=new STATE.AIRBORN();
-							}
-							this.keepRunning = false;
-						}
-						moveLeft(instance){
-							instance.direction = DIRECTION.LEFT;
-							this.keepRunning = true;
-						}
-						moveRight(instance){
-							instance.direction = DIRECTION.RIGHT;
-                    		this.keepRunning = true;
-						}
-						jump(instance){
-							let st=new STATE.AIRBORN();
-							st.keepRunning = this.keepRunning;
-							instance.state = st;
-							instance.vy = -instance.jumpSpeed;
-						}
-					}
-				return m;
-			})(),
-            
-			JUMPING : undefined,
-			AIRBORN : (function(){
-				var m =
-					class extends State{
-						constructor(){
-							super();
-							this.animation = new Mocho.animation.Animation(ANIMATION.AIRBORN,frameTime);
-							this.jumps = 1;	
-						}
-						update(instance, dt){
-							this.animation.update(dt);
-							if(instance.floored){
-								if(this.keepRunning){
-									instance.state = new STATE.RUNNING();
-								}else{
-									instance.state = new STATE.IDLE();
-								}
-							}
-							if(this.keepRunning){
-								instance.vx = instance.speed * instance.direction;
-							}else{
-								instance.vx = (Math.abs(instance.vx) > 0.0001)*(instance.vx * 0.9);
-							}
-							this.keepRunning = false;
-						}
-						moveLeft(instance){
-							instance.direction = DIRECTION.LEFT;
-							this.keepRunning = true;
-						}
-						moveRight(instance){
-							instance.direction = DIRECTION.RIGHT;
-                    		this.keepRunning = true;
-						}
-						jump(instance){
-							if(this.jumps > 0){
-								instance.vy = -instance.jumpSpeed;
-								--this.jumps;
-							}
-						}
-					}
-				return m;
-			})()
-
-		};
-
-		class Dude{
-			constructor(x,y){
-				this.x = x;
-				this.y = y;
-				this.vx = 0;
-				this.vy = 0;
-
-				this.state = new STATE.IDLE(this);
-				this.direction = DIRECTION.RIGHT;
-
-				this.floored = false;
-			}
-			
-			step(dt){
-				this.state.update(this,dt);
-				this.vy += this.fallAcceleration * dt;
-				
-				this.x += this.vx * dt;
-				this.y += this.vy * dt;
-				//if(this.vy <= 0 && this.vy > -this.fallAcceleration){console.log(this.y);}
-			}
-			
-			render(ctx){
-				this.state.render(this,ctx);
-			}
-			
-			moveLeft(){this.state.moveLeft(this);}
-			moveRight(){this.state.moveRight(this);}
-			moveUp(instance){this.state.moveUp(this);}
-			moveDown(instance){this.state.moveDown(this);}
-			jump(instance){this.state.jump(this);}
-		}
-		Dude.prototype.speed = 100/1000;
-		Dude.prototype.jumpSpeed = 300/1000;
-		Dude.prototype.fallAcceleration = 1/1000;
-		Dude.prototype.ox = 3;
-		Dude.prototype.oy = 3;
-		Dude.prototype.w = 10;
-		Dude.prototype.h = 10;
-		return Dude;
-	})();
-	function DudeManager(){
-		this.instances=[];
-	}
-	DudeManager.prototype.create = function(x,y){
-		var ret = new Dude(x,y);
-        this.instances.push(ret);
-        return ret;
-	}
-	DudeManager.prototype.step = function(dt){
-		this.instances.forEach(
-			function(each){
-				each.step(dt);
-			}
-		)
-	}
-	
-	
-	function canvas2dContextDraw(ctx){
-		this.instances.forEach(
-			function(each){
-				each.render(ctx);
-			}
-		)
-	}
-	
-	DudeManager.prototype.render = canvas2dContextDraw;
-	
-	
-	mod.DudeManager = DudeManager;
-	return mod;
-})(Game.Managers||{});
-},{"./../../Dependencies/Mocho":1,"./../Global/global":11}],15:[function(require,module,exports){
-"use strict";
-var Game = require("./../Global/global");
-var Mocho = require("./../../Dependencies/Mocho");
-Game.Managers = (function(mod){
-	class LavaManager{
-		constructor(){
-			this.instances = [];
+			};
+	});
+	var State = class {
+		constructor(){}
+		
+		update(instance,dt){}
+		render(instance,ctx){
+			let dir = instance.direction;
+			ctx.scale(dir,1);
+			let pos = (instance.x-instance.ox) * dir + 8*(dir-1);
+			this.animation
+				.getCurrentFrame()
+				.draw(ctx,Math.floor(pos),Math.floor(instance.y-instance.oy));
+			ctx.setTransform(1, 0, 0, 1, 0, 0);
 		}
 		
-		create(x, y, type){
-			type = type || 0;
-			let inst = this.instances[type] = this.instances[type] || [];
-			var ret = LavaManager.factory[type](x,y);
-			inst.push(ret);
-			return ret;
+		moveLeft(instance){}
+		moveRight(instance){}
+		moveUp(instance){}
+		moveDown(instance){}
+		jump(instance){}
+
+	}
+	var STATE = {
+		IDLE : (function(){
+			var m = 
+				class extends State{
+					constructor(){
+						super();
+						this.animation = new Mocho.animation.Animation(ANIMATION.IDLE,frameTime);
+					}
+					update(instance, dt){
+						this.animation.update(dt);
+						instance.vx = (Math.abs(instance.vx) > 0.0001)*(instance.vx * 0.75);
+						if(!instance.floored){
+							instance.state=new STATE.AIRBORN();
+						}
+					}
+					moveLeft(instance){
+						instance.direction = DIRECTION.LEFT;
+						instance.state = new STATE.RUNNING();
+					}
+					moveRight(instance){
+						instance.direction = DIRECTION.RIGHT;
+						instance.state = new STATE.RUNNING();
+					}
+					jump(instance){
+						let st=new STATE.AIRBORN();
+						st.keepRunning = this.keepRunning;
+						instance.state = st;
+						instance.vy = -instance.jumpSpeed;
+					}
+				}
+			
+			return m;
+		})(),
+
+		RUNNING : (function(){
+			var m =
+				class extends State{
+					constructor(){
+						super();
+						this.animation = new Mocho.animation.Animation(ANIMATION.RUNNING,frameTime);
+						this.keepRunning = true;
+					}
+					update(instance, dt){
+						this.animation.update(dt);
+						if(!this.keepRunning){
+							instance.state = new STATE.IDLE();
+						} else {
+							instance.vx = instance.speed * instance.direction;
+						}
+						if(!instance.floored){
+							instance.state=new STATE.AIRBORN();
+						}
+						this.keepRunning = false;
+					}
+					moveLeft(instance){
+						instance.direction = DIRECTION.LEFT;
+						this.keepRunning = true;
+					}
+					moveRight(instance){
+						instance.direction = DIRECTION.RIGHT;
+						this.keepRunning = true;
+					}
+					jump(instance){
+						let st=new STATE.AIRBORN();
+						st.keepRunning = this.keepRunning;
+						instance.state = st;
+						instance.vy = -instance.jumpSpeed;
+					}
+				}
+			return m;
+		})(),
+		
+		JUMPING : undefined,
+		AIRBORN : (function(){
+			var m =
+				class extends State{
+					constructor(){
+						super();
+						this.animation = new Mocho.animation.Animation(ANIMATION.AIRBORN,frameTime);
+						this.jumps = 1;	
+					}
+					update(instance, dt){
+						this.animation.update(dt);
+						if(instance.floored){
+							if(this.keepRunning){
+								instance.state = new STATE.RUNNING();
+							}else{
+								instance.state = new STATE.IDLE();
+							}
+						}
+						if(this.keepRunning){
+							instance.vx = instance.speed * instance.direction;
+						}else{
+							instance.vx = (Math.abs(instance.vx) > 0.0001)*(instance.vx * 0.9);
+						}
+						this.keepRunning = false;
+					}
+					moveLeft(instance){
+						instance.direction = DIRECTION.LEFT;
+						this.keepRunning = true;
+					}
+					moveRight(instance){
+						instance.direction = DIRECTION.RIGHT;
+						this.keepRunning = true;
+					}
+					jump(instance){
+						if(this.jumps > 0){
+							instance.vy = -instance.jumpSpeed;
+							--this.jumps;
+						}
+					}
+				}
+			return m;
+		})()
+
+	};
+
+	class Dude{
+		constructor(x,y){
+			this.x = x;
+			this.y = y;
+			this.vx = 0;
+			this.vy = 0;
+
+			this.state = new STATE.IDLE(this);
+			this.direction = DIRECTION.RIGHT;
+
+			this.floored = false;
 		}
 		
 		step(dt){
-			this.instances.forEach(
-				function(eachContainer){
-					eachContainer.forEach(
-						function(each){
-							each.STEP(dt);
-						}
-					)
-				}
-			);
+			this.state.update(this,dt);
+			this.vy += this.fallAcceleration * dt;
+			
+			this.x += this.vx * dt;
+			this.y += this.vy * dt;
+			//if(this.vy <= 0 && this.vy > -this.fallAcceleration){console.log(this.y);}
 		}
+		
+		render(ctx){
+			this.state.render(this,ctx);
+		}
+		
+		moveLeft(){this.state.moveLeft(this);}
+		moveRight(){this.state.moveRight(this);}
+		moveUp(instance){this.state.moveUp(this);}
+		moveDown(instance){this.state.moveDown(this);}
+		jump(instance){this.state.jump(this);}
+	}
+	Dude.prototype.speed = 100/1000;
+	Dude.prototype.jumpSpeed = 300/1000;
+	Dude.prototype.fallAcceleration = 1/1000;
+	Dude.prototype.ox = 3;
+	Dude.prototype.oy = 3;
+	Dude.prototype.w = 10;
+	Dude.prototype.h = 10;
+	return Dude;
+})();
+function DudeManager(){
+	this.instances=[];
+}
+DudeManager.prototype.create = function(x,y){
+	var ret = new Dude(x,y);
+	this.instances.push(ret);
+	return ret;
+}
+DudeManager.prototype.step = function(dt){
+	this.instances.forEach(
+		function(each){
+			each.step(dt);
+		}
+	)
+}
+
+
+function canvas2dContextDraw(ctx){
+	this.instances.forEach(
+		function(each){
+			each.render(ctx);
+		}
+	)
+}
+
+DudeManager.prototype.render = canvas2dContextDraw;
+
+
+module.exports = DudeManager;
+
+},{"../Input/input":12,"./../../Dependencies/Mocho":1,"./../Resources/loadImages":19}],15:[function(require,module,exports){
+"use strict";
+var Mocho = require("./../../Dependencies/Mocho");
+var loadImagesPromise = require("./../Resources/loadImages");
+class LavaManager{
+	constructor(){
+		this.instances = [];
 	}
 	
-	LavaManager.TYPE = 
-	{
-		SURFACE : 0,
-		INNER : 1,
-	}
-	LavaManager.factory = []
-	LavaManager.factory[LavaManager.TYPE.SURFACE] = function(x,y){
-		var ret = new Lava(x,y);
-		ret.h -= 3;
-		ret.y += 3;
+	create(x, y, type){
+		type = type || 0;
+		let inst = this.instances[type] = this.instances[type] || [];
+		var ret = LavaManager.factory[type](x,y);
+		inst.push(ret);
 		return ret;
 	}
-	LavaManager.factory[LavaManager.TYPE.INNER] = function(x,y){
-		return new Lava(x,y);
-	}
 	
-	var sprites = [];
-	sprites[LavaManager.TYPE.INNER] =
-		new Mocho.animation.Sprite( Game.images.tiles
-						 , 16, 16, 16, 16
-						 , 0, 0, 16, 16);
-	sprites[LavaManager.TYPE.SURFACE] =
-		new Mocho.animation.Sprite( Game.images.tiles
-						 , 0, 16, 16, 16
-						 , 0, -3, 16, 16);
-	
-	function canvas2dContextDraw(ctx){
+	step(dt){
 		this.instances.forEach(
-			function(eachContainer,type){
+			function(eachContainer){
 				eachContainer.forEach(
 					function(each){
-						sprites[type].draw(ctx,each.x,each.y);
+						each.STEP(dt);
 					}
 				)
 			}
-		)
+		);
 	}
-	
-	LavaManager.prototype.render = canvas2dContextDraw;
-	class Lava{
-		constructor (x,y) {
-			this.x = x;
-			this.y = y;
-			this.w = 16;
-			this.h = 16;
-		}
-		STEP(dt){}
-		onCollision(other){}
-	}
-	mod.LavaManager = LavaManager;
+}
 
-	return mod;
-})(Game.Managers||{});
-},{"./../../Dependencies/Mocho":1,"./../Global/global":11}],16:[function(require,module,exports){
+LavaManager.TYPE = 
+{
+	SURFACE : 0,
+	INNER : 1,
+}
+LavaManager.factory = []
+LavaManager.factory[LavaManager.TYPE.SURFACE] = function(x,y){
+	var ret = new Lava(x,y);
+	ret.h -= 3;
+	ret.y += 3;
+	return ret;
+}
+LavaManager.factory[LavaManager.TYPE.INNER] = function(x,y){
+	return new Lava(x,y);
+}
+
+var sprites = [];
+loadImagesPromise.then((images)=>{//initialize these mfs after loading
+	sprites[LavaManager.TYPE.INNER] =
+	new Mocho.animation.Sprite( images.tiles
+						, 16, 16, 16, 16
+						, 0, 0, 16, 16);
+	sprites[LavaManager.TYPE.SURFACE] =
+		new Mocho.animation.Sprite( images.tiles
+							, 0, 16, 16, 16
+							, 0, -3, 16, 16);
+
+})
+
+function canvas2dContextDraw(ctx){
+	this.instances.forEach(
+		function(eachContainer,type){
+			eachContainer.forEach(
+				function(each){
+					sprites[type].draw(ctx,each.x,each.y);
+				}
+			)
+		}
+	)
+}
+
+LavaManager.prototype.render = canvas2dContextDraw;
+class Lava{
+	constructor (x,y) {
+		this.x = x;
+		this.y = y;
+		this.w = 16;
+		this.h = 16;
+	}
+	STEP(dt){}
+	onCollision(other){}
+}
+module.exports = LavaManager;
+
+},{"./../../Dependencies/Mocho":1,"./../Resources/loadImages":19}],16:[function(require,module,exports){
 "use strict";
-var Game = require("./../Global/global");
 var Mocho = require("./../../Dependencies/Mocho");
-Game.Managers = (function(mod){
+var loadImagesPromise = require("./../Resources/loadImages");
+//Game.Managers = (function(mod){
 	class PortalManager{
 		constructor(){
 			this.instances = [];
@@ -1345,23 +1349,29 @@ Game.Managers = (function(mod){
 			);
 		}
 	}
-	
-	var sheet = Game.images.tiles;
-	var tileset = 
-		new Mocho.animation.TileSheet
-			( sheet
-			, sheet.width
-			, sheet.height
-			, 16
-			, 16
-			);
-	var animationfs = new Mocho.animation.AnimationFrameSet
-			( tileset
-			, 0 + 2*10
-			, 8
-			, "repeat"
-			);
-	var animation = new Mocho.animation.Animation(animationfs,100);
+	var sheet,
+		tileset,
+		animationfs,
+		animation;
+	loadImagesPromise.then((images)=>{
+		sheet = images.tiles;
+		
+		tileset = 
+			new Mocho.animation.TileSheet
+				( sheet
+				, sheet.width
+				, sheet.height
+				, 16
+				, 16
+				);
+		animationfs = new Mocho.animation.AnimationFrameSet
+				( tileset
+				, 0 + 2*10
+				, 8
+				, "repeat"
+				);
+		animation = new Mocho.animation.Animation(animationfs,100);
+	});
 	function canvas2dContextDraw(ctx){
 		let sprite = animation.getCurrentFrame();
 		this.instances.forEach(
@@ -1384,15 +1394,15 @@ Game.Managers = (function(mod){
 		STEP(dt){}
 		onCollision(other){}
 	}
-	mod.PortalManager = PortalManager;
-
-	return mod;
-})(Game.Managers||{});
-},{"./../../Dependencies/Mocho":1,"./../Global/global":11}],17:[function(require,module,exports){
+	//mod.PortalManager = PortalManager;
+module.exports = PortalManager;
+//	return mod;
+//})(Game.Managers||{});
+},{"./../../Dependencies/Mocho":1,"./../Resources/loadImages":19}],17:[function(require,module,exports){
 "use strict";
-var Game = require("./../Global/global");
 var Mocho = require("./../../Dependencies/Mocho");
-Game.Managers = (function(mod){
+var loadImagesPromise = require("./../Resources/loadImages");
+//Game.Managers = (function(mod){
 	class WallManager{
 		constructor(){
 			this.instances = [];
@@ -1440,16 +1450,17 @@ Game.Managers = (function(mod){
 		return ret;
 	}
 	var sprites = []
-	sprites[WallManager.TYPE.BLOCK] = new Mocho.animation.Sprite( Game.images.tiles
-		 , 0, 0, 16, 16
-		 , 0, 0, 16, 16);
-	sprites[WallManager.TYPE.TILE] = new Mocho.animation.Sprite( Game.images.tiles
-		 , 16, 0, 16, 16
-		 , 0, 0, 16, 16);
-	sprites[WallManager.TYPE.LITTLE_BLOCK] = new Mocho.animation.Sprite( Game.images.tiles
-		 , 16*8, 0, 16, 16
-		 , 0, 0, 16, 16);
-	
+	loadImagesPromise.then((images)=>{
+		sprites[WallManager.TYPE.BLOCK] = new Mocho.animation.Sprite( images.tiles
+			, 0, 0, 16, 16
+			, 0, 0, 16, 16);
+		sprites[WallManager.TYPE.TILE] = new Mocho.animation.Sprite( images.tiles
+			, 16, 0, 16, 16
+			, 0, 0, 16, 16);
+		sprites[WallManager.TYPE.LITTLE_BLOCK] = new Mocho.animation.Sprite( images.tiles
+			, 16*8, 0, 16, 16
+			, 0, 0, 16, 16);
+	});
 	function canvas2dContextDraw(ctx){
 		this.instances.forEach(
 			function(eachContainer,type){
@@ -1475,8 +1486,8 @@ Game.Managers = (function(mod){
 		onCollision(other){}
 	}
 	//global events
-	mod.WallManager = WallManager;
-	
+//	mod.WallManager = WallManager;
+module.exports = WallManager;	
 	/*	
 	this.x += this.vx*dt + 0.5*this.ax*dt*dt;
 	this.y += this.vy*dt + 0.5*this.ay*dt*dt;
@@ -1484,19 +1495,38 @@ Game.Managers = (function(mod){
 	this.vx += this.ax*dt;
 	this.vy += this.ay*dt;  
 	*/
-	return mod;
-})(Game.Managers||{});
-},{"./../../Dependencies/Mocho":1,"./../Global/global":11}],18:[function(require,module,exports){
+//	return mod;
+//})(Game.Managers||{});
+},{"./../../Dependencies/Mocho":1,"./../Resources/loadImages":19}],18:[function(require,module,exports){
+module.exports = {
+    DudeManager : require("./Dude"),
+    LavaManager : require("./Lava"),
+    PortalManager : require("./Portal"),
+    WallManager : require("./Wall")
+}
+},{"./Dude":14,"./Lava":15,"./Portal":16,"./Wall":17}],19:[function(require,module,exports){
 "use strict";
-var Game = require("./../Global/global");
-Game.images = (function(mod){
-	return mod;
-})(Game.images||{})
-},{"./../Global/global":11}],19:[function(require,module,exports){
+var Mocho = require("../../Dependencies/Mocho");
+
+module.exports = Mocho.load.loadImages(//load the stuff
+	[ "Assets/Images/tiles.png"
+	, "Assets/Images/simple_sheet.png"
+	, "Assets/Images/sheet2.png"
+	]
+).then(
+	(imgs)=>{
+		return {
+			sheet : imgs["Assets/Images/simple_sheet.png"],
+			sheet2 : imgs["Assets/Images/sheet2.png"],
+			tiles : imgs["Assets/Images/tiles.png"]
+		}
+	}
+);
+
+},{"../../Dependencies/Mocho":1}],20:[function(require,module,exports){
 "use strict";
-var Game = require("./../Global/global");
 var Mocho = require("./../../Dependencies/Mocho");
-var Game = ((mod)=>{
+//var Game = ((mod)=>{
     let canvas = document.createElement("canvas");
     canvas.width = 480;
     canvas.height = 320;
@@ -1505,386 +1535,363 @@ var Game = ((mod)=>{
     canvas.addEventListener("blur",(event)=>Mocho.input.allowArrowKeyScroll(canvas));
     document.body.appendChild(canvas);
 
-    mod.canvas = canvas;
-    mod.ctx = canvas.getContext("2d");
-    return mod;
-})(Game||{});
-},{"./../../Dependencies/Mocho":1,"./../Global/global":11}],20:[function(require,module,exports){
+    module.exports.canvas = canvas;
+    module.exports.ctx = canvas.getContext("2d");
+    //return mod;
+//})(Game||{});
+},{"./../../Dependencies/Mocho":1}],21:[function(require,module,exports){
 "use strict";
-var Game = require("../Global/global");
+var Game = require("../../Game");
 var Mocho = require("../../Dependencies/Mocho")
-var Game = (function(mod){
-	function updateManagers(dt){
-		this.managers.forEach(
-			function(each){
-				each.step(dt);
+function updateManagers(dt){
+	this.managers.forEach(
+		function(each){
+			each.step(dt);
+		}
+	);
+}
+
+function checkDudeWall(dude,wall,dt){
+	if(Mocho.collision.boxBoxMoving
+		( dude.x, dude.y, dude.w, dude.h
+		, wall.x, wall.y, wall.w, wall.h
+		, -dude.vx * dt, -dude.vy * dt
+		)
+	)
+	{
+		let dx = dude.vx * dt;
+		let dy = dude.vy * dt;
+		
+		var side = mocho.collision.boxBoxSideOfCollision
+			( dude.x - dx, dude.y - dy, dude.w, dude.h
+			, wall.x, wall.y, wall.w, wall.h
+			, dx , dy
+			);
+
+		const skin = 0.00;
+		//right
+		if(side.x>0){
+			dude.x = wall.x-dude.w -skin; dude.vx=0;
+		}
+		//left
+		if(side.x<0){
+			dude.x = wall.x+wall.w +skin; dude.vx=0;
+		}
+		//top
+		if(side.y>0){
+			dude.y = wall.y-dude.h -skin; dude.vy=0; dude.floored = true;
+		}
+		//bot
+		if(side.y<0){
+			dude.y = wall.y+wall.h +skin; dude.vy=0;
+		}
+		
+	}
+}
+
+function checkDudeWallH(dude,wall,dt){
+	const skin = 0.00;
+	const freedom = 0.00;
+	if(Mocho.collision.boxBoxMoving
+		( dude.x, dude.y, dude.w, dude.h
+		, wall.x+freedom, wall.y, wall.w-freedom*2, wall.h
+		, -dude.vx * dt, -dude.vy * dt
+		)
+	)
+	{
+		let dx = dude.vx * dt;
+		let dy = dude.vy * dt;
+		
+		var side = Mocho.collision.boxBoxSideOfCollision
+			( dude.x - dx, dude.y - dy, dude.w, dude.h
+			, wall.x, wall.y, wall.w, wall.h
+			, dx , dy
+			);
+
+		//right
+		if(side.x>0){
+			dude.x = wall.x-dude.w -skin; dude.vx=0;
+		}
+		//left
+		if(side.x<0){
+			dude.x = wall.x+wall.w +skin; dude.vx=0;
+		}
+		
+	}
+}
+function checkDudeWallV(dude,wall,dt){
+	const skin = 0.00;
+	const freedom = 0.00;
+	if(Mocho.collision.boxBoxMoving
+		( dude.x, dude.y, dude.w, dude.h
+		, wall.x, wall.y+freedom, wall.w, wall.h-freedom*2
+		, -dude.vx * dt, -dude.vy * dt
+		)
+	)
+	{
+		let dx = dude.vx * dt;
+		let dy = dude.vy * dt;
+		
+		var side = Mocho.collision.boxBoxSideOfCollision
+			( dude.x - dx, dude.y - dy, dude.w, dude.h
+			, wall.x, wall.y, wall.w, wall.h
+			, dx , dy
+			);
+
+		//top
+		if(side.y>0){
+			dude.y = wall.y-dude.h -skin; dude.vy=0; dude.floored = true;
+		}
+		//bot
+		if(side.y<0){
+			dude.y = wall.y+wall.h +skin; dude.vy=0;
+		}
+		
+	}
+}
+
+function checkDudeLava(dude,lava,dt){
+	if(Mocho.collision.boxBoxMoving
+		( dude.x, dude.y, dude.w, dude.h
+		, lava.x, lava.y, lava.w, lava.h
+		, -dude.vx * dt, -dude.vy * dt)
+		)
+	{
+		Game.reset();
+	}
+}
+
+class World {
+	constructor(){
+		this.managers = [];
+	}
+	
+	update(dt){
+		updateManagers.call(this,dt);
+		var dudes = this.DudeManager.instances;
+		var walls = this.WallManager.instances;
+		var lavas = this.LavaManager.instances;
+		dudes.forEach(
+			(dude)=>{
+				dude.floored = false;
+				let vy,dy,vx,dx;
+				
+				//move vertically
+				vx = dude.vx;
+				dx = dude.vx*dt;
+				dude.x -= dx;
+				dude.vx = 0;
+				walls.forEach((ctner)=>ctner.forEach((wall)=>checkDudeWallV(dude,wall,dt)));
+				dude.x += dx;
+				dude.vx = vx;
+				
+				//move horizontally
+				vy = dude.vy;
+				dy = dude.vy*dt;
+				dude.y -= dy;
+				dude.vy = 0;
+				walls.forEach((ctner)=>ctner.forEach((wall)=>checkDudeWallH(dude,wall,dt)));
+				dude.y += dy;
+				dude.vy = vy;
+				
+				//check lava
+				lavas.forEach((ctner)=>ctner.forEach((lava)=>checkDudeLava(dude,lava,dt)));
 			}
 		);
 	}
 	
-	function checkDudeWall(dude,wall,dt){
-		if(Mocho.collision.boxBoxMoving
-			( dude.x, dude.y, dude.w, dude.h
-			, wall.x, wall.y, wall.w, wall.h
-			, -dude.vx * dt, -dude.vy * dt
-			)
+	render(ctx){
+		this.managers.forEach(
+			function(each){
+				each.render(ctx);
+			}
 		)
-		{
-			let dx = dude.vx * dt;
-			let dy = dude.vy * dt;
-			
-			var side = mocho.collision.boxBoxSideOfCollision
-				( dude.x - dx, dude.y - dy, dude.w, dude.h
-				, wall.x, wall.y, wall.w, wall.h
-				, dx , dy
-				);
+	}
+}
 
-			const skin = 0.00;
-			//right
-			if(side.x>0){
-				dude.x = wall.x-dude.w -skin; dude.vx=0;
-			}
-			//left
-			if(side.x<0){
-				dude.x = wall.x+wall.w +skin; dude.vx=0;
-			}
-			//top
-			if(side.y>0){
-				dude.y = wall.y-dude.h -skin; dude.vy=0; dude.floored = true;
-			}
-			//bot
-			if(side.y<0){
-				dude.y = wall.y+wall.h +skin; dude.vy=0;
-			}
-			
-		}
-	}
-	
-	function checkDudeWallH(dude,wall,dt){
-		const skin = 0.00;
-		const freedom = 0.00;
-		if(Mocho.collision.boxBoxMoving
-			( dude.x, dude.y, dude.w, dude.h
-			, wall.x+freedom, wall.y, wall.w-freedom*2, wall.h
-			, -dude.vx * dt, -dude.vy * dt
-			)
-		)
-		{
-			let dx = dude.vx * dt;
-			let dy = dude.vy * dt;
-			
-			var side = Mocho.collision.boxBoxSideOfCollision
-				( dude.x - dx, dude.y - dy, dude.w, dude.h
-				, wall.x, wall.y, wall.w, wall.h
-				, dx , dy
-				);
+module.exports = World;
 
-			//right
-			if(side.x>0){
-				dude.x = wall.x-dude.w -skin; dude.vx=0;
-			}
-			//left
-			if(side.x<0){
-				dude.x = wall.x+wall.w +skin; dude.vx=0;
-			}
-			
-		}
-	}
-	function checkDudeWallV(dude,wall,dt){
-		const skin = 0.00;
-		const freedom = 0.00;
-		if(Mocho.collision.boxBoxMoving
-			( dude.x, dude.y, dude.w, dude.h
-			, wall.x, wall.y+freedom, wall.w, wall.h-freedom*2
-			, -dude.vx * dt, -dude.vy * dt
-			)
-		)
-		{
-			let dx = dude.vx * dt;
-			let dy = dude.vy * dt;
-			
-			var side = Mocho.collision.boxBoxSideOfCollision
-				( dude.x - dx, dude.y - dy, dude.w, dude.h
-				, wall.x, wall.y, wall.w, wall.h
-				, dx , dy
-				);
-
-			//top
-			if(side.y>0){
-				dude.y = wall.y-dude.h -skin; dude.vy=0; dude.floored = true;
-			}
-			//bot
-			if(side.y<0){
-				dude.y = wall.y+wall.h +skin; dude.vy=0;
-			}
-			
-		}
-	}
-	
-	function checkDudeLava(dude,lava,dt){
-		if(Mocho.collision.boxBoxMoving
-			( dude.x, dude.y, dude.w, dude.h
-			, lava.x, lava.y, lava.w, lava.h
-			, -dude.vx * dt, -dude.vy * dt)
-		  )
-		{
-			Game.reset();
-		}
-	}
-	
-	class World {
-		constructor(){
-			this.managers = [];
-		}
-		
-		update(dt){
-			updateManagers.call(this,dt);
-			var dudes = this.DudeManager.instances;
-			var walls = this.WallManager.instances;
-			var lavas = this.LavaManager.instances;
-			dudes.forEach(
-				(dude)=>{
-					dude.floored = false;
-					let vy,dy,vx,dx;
-					
-					//move vertically
-					vx = dude.vx;
-					dx = dude.vx*dt;
-					dude.x -= dx;
-					dude.vx = 0;
-					walls.forEach((ctner)=>ctner.forEach((wall)=>checkDudeWallV(dude,wall,dt)));
-					dude.x += dx;
-					dude.vx = vx;
-					
-					//move horizontally
-					vy = dude.vy;
-					dy = dude.vy*dt;
-					dude.y -= dy;
-					dude.vy = 0;
-					walls.forEach((ctner)=>ctner.forEach((wall)=>checkDudeWallH(dude,wall,dt)));
-					dude.y += dy;
-					dude.vy = vy;
-					
-					//check lava
-					lavas.forEach((ctner)=>ctner.forEach((lava)=>checkDudeLava(dude,lava,dt)));
-				}
-			);
-		}
-		
-		render(ctx){
-			this.managers.forEach(
-				function(each){
-					each.render(ctx);
-				}
-			)
-		}
-	}
-	
-	mod.World = World;
-	
-	return mod;
-	
-})(Game||{});
-},{"../../Dependencies/Mocho":1,"../Global/global":11}],21:[function(require,module,exports){
+},{"../../Dependencies/Mocho":1,"../../Game":22}],22:[function(require,module,exports){
 "use strict";
-require("./Setup/dom");
-require("./Input/state");
-require("./Input/input");
-require("./Resources/ImageHolder");
-require("./Objects/Wall");
-require("./Objects/Lava");
-require("./Objects/Dude");
-require("./Objects/Portal");
-require("./World/World");
-require("./run");
-module.exports = require("./Global/global");
-},{"./Global/global":11,"./Input/input":12,"./Input/state":13,"./Objects/Dude":14,"./Objects/Lava":15,"./Objects/Portal":16,"./Objects/Wall":17,"./Resources/ImageHolder":18,"./Setup/dom":19,"./World/World":20,"./run":22}],22:[function(require,module,exports){
+
+module.exports = require("./Resources/loadImages").then(()=>{
+    return {
+        run: require("./run").run
+    };
+})
+
+
+},{"./Resources/loadImages":19,"./run":23}],23:[function(require,module,exports){
 "use strict";
 var Mocho = require("../Dependencies/Mocho");
-var Game = require("./Global/global");
-var Game = (function(mod){
-	var canvas = mod.canvas;
-	var ctx = mod.ctx;
-	
-    var world = new Game.World();
-	
-	world.PortalManager=new Game.Managers.PortalManager();
-	world.managers.push(world.PortalManager);
-	
-	world.DudeManager = new Game.Managers.DudeManager();
-	world.managers.push(world.DudeManager);
-	
-	world.WallManager=new Game.Managers.WallManager();
-	world.managers.push(world.WallManager);
-	
-	world.LavaManager=new Game.Managers.LavaManager();
-	world.managers.push(world.LavaManager);
-	
-	
-    var su = 16;//space unit
-	
-    let type_wall = Game.Managers.WallManager.TYPE.BLOCK;
-	let type_tile = Game.Managers.WallManager.TYPE.TILE;
-	let type_lilblock = Game.Managers.WallManager.TYPE.LITTLE_BLOCK;
-	var walls = 
-        [ [0 ,12, type_wall]
-        , [1 ,12, type_wall]
-        , [1 ,11, type_wall]
-        , [2 ,12, type_wall], [2 , 9, type_wall]
-        , [3 ,12, type_wall]
-        , [4 ,12, type_wall]
-        , [9 ,12, type_wall]
-        , [21,3 , type_wall]
-        , [21,4 , type_wall]
-        , [21,5 , type_wall]
-        , [21,6 , type_wall]
-        , [20,7 , type_wall]
-        , [13,11, type_lilblock]
-        , [17,11, type_lilblock]
-        , [21,10, type_lilblock]
-        , [11,5 , type_lilblock]
-        , [16,5 , type_lilblock]
-        ];
-	
-	let type_sur = Game.Managers.LavaManager.TYPE.SURFACE;
-	let type_in = Game.Managers.LavaManager.TYPE.INNER;
-	var lavas = 
-		[ [0 ,19]
-        , [1 ,19]
-        , [2 ,19]
-        , [3 ,19], [ 8, 8,type_in], [ 8,7]
-        , [4 ,19], [ 9, 8,type_in], [ 9,7]
-        , [8 ,19], [10, 8,type_in], [10,7]
-        , [9 ,19], [11, 8,type_in], [11,7] 
-        , [10,19], [12, 8,type_in], [12,7]
-        , [11,19], [13, 8,type_in], [13,7]
-		, [12,19], [14, 8,type_in], [14,7]
-        , [13,19], [15, 8,type_in], [15,7]
-        , [14,19], [16, 8,type_in], [16,7]
-        , [15,19]
-        , [16,19]
-        , [17,19]
-        , [18,19]
-        , [19,19]
-        , [20,19]
-        , [21,19]
-        , [22,19]
-        , [23,19]
-        , [24,19]
-        , [25,19]
-        , [26,19]
-        , [27,19]
-        , [28,19]
-        , [29,19]
-        , [5 ,19, type_in]
-        , [5 ,18, type_in]
-        , [5 ,17, type_in]
-        , [5 ,16, type_in]
-        , [5 ,15, type_in]
-        , [5 ,14, type_in]
-        , [5 ,13, type_in]
-        , [5 ,12, type_in]
-        , [5 ,11, type_in]
-        , [5 ,10, type_in]
-        , [5 , 9, type_in]
-        , [5 , 8, type_in]
-        , [5 , 7]
-        , [7 ,19, type_in]
-        , [7 ,18, type_in]
-        , [7 ,17, type_in]
-        , [7 ,16, type_in]
-        , [7 ,15, type_in]
-        , [7 ,14, type_in]
-        , [7 ,13, type_in]
-        , [7 ,12, type_in]
-        , [7 ,11, type_in]
-        , [7 ,10, type_in]
-        , [7 , 9, type_in]
-        , [7 , 8, type_in]
-        , [7 , 7]
-        
-        ];
-	var portal = [2,8];
-    var player = [9,11];
-	Game.reset = function(){
-		pj.x = player[0]*su;
-		pj.y = player[1]*su;
-		pj.vx = 0;
-		pj.vy = 0;
-	}
-	var pj;
-	var prt;
-    var loop = new Mocho.loop.Loop(
-		function(){
-			pj = world.DudeManager.create(player[0]*su,player[1]*su);
-			prt = world.PortalManager.create(portal[0]*su,portal[1]*su);
-			walls.forEach(
-                function(e){
-                    world.WallManager.create(e[0]*su,e[1]*su,e[2]);
-                }
-            );
-			lavas.forEach(
-                function(e){
-                    world.LavaManager.create(e[0]*su,e[1]*su,e[2]);
-                }
-            );
-		},
-		function(dt){
-			let jumpKey, s, dir;
-			Game.Input.update();
-            //InputController.update();
-            s = Game.Input.state.s;
-            dir = s[Game.Input.BUTTONS.RIGHT][0] - s[Game.Input.BUTTONS.LEFT][0];
-            switch(dir){
-                case -1:    
-                    pj.moveLeft();
-                    break;
-                case 1:
-                    pj.moveRight();
-                    break;
+var Game = require("../Game");
+var World = require("./World/World");
+var Managers = require("./Objects");
+var Input = require("./Input/input");
+var Dom = require("./Setup/dom");
+var canvas = Dom.canvas;
+var ctx = Dom.ctx;
+
+var world = new World();
+
+world.PortalManager=new Managers.PortalManager();
+world.managers.push(world.PortalManager);
+
+world.DudeManager = new Managers.DudeManager();
+world.managers.push(world.DudeManager);
+
+world.WallManager=new Managers.WallManager();
+world.managers.push(world.WallManager);
+
+world.LavaManager=new Managers.LavaManager();
+world.managers.push(world.LavaManager);
+
+
+var su = 16;//space unit
+
+let type_wall = Managers.WallManager.TYPE.BLOCK;
+let type_tile = Managers.WallManager.TYPE.TILE;
+let type_lilblock = Managers.WallManager.TYPE.LITTLE_BLOCK;
+var walls = 
+    [ [0 ,12, type_wall]
+    , [1 ,12, type_wall]
+    , [1 ,11, type_wall]
+    , [2 ,12, type_wall], [2 , 9, type_wall]
+    , [3 ,12, type_wall]
+    , [4 ,12, type_wall]
+    , [9 ,12, type_wall]
+    , [21,3 , type_wall]
+    , [21,4 , type_wall]
+    , [21,5 , type_wall]
+    , [21,6 , type_wall]
+    , [20,7 , type_wall]
+    , [13,11, type_lilblock]
+    , [17,11, type_lilblock]
+    , [21,10, type_lilblock]
+    , [11,5 , type_lilblock]
+    , [16,5 , type_lilblock]
+    ];
+
+let type_sur = Managers.LavaManager.TYPE.SURFACE;
+let type_in = Managers.LavaManager.TYPE.INNER;
+var lavas = 
+    [ [0 ,19]
+    , [1 ,19]
+    , [2 ,19]
+    , [3 ,19], [ 8, 8,type_in], [ 8,7]
+    , [4 ,19], [ 9, 8,type_in], [ 9,7]
+    , [8 ,19], [10, 8,type_in], [10,7]
+    , [9 ,19], [11, 8,type_in], [11,7] 
+    , [10,19], [12, 8,type_in], [12,7]
+    , [11,19], [13, 8,type_in], [13,7]
+    , [12,19], [14, 8,type_in], [14,7]
+    , [13,19], [15, 8,type_in], [15,7]
+    , [14,19], [16, 8,type_in], [16,7]
+    , [15,19]
+    , [16,19]
+    , [17,19]
+    , [18,19]
+    , [19,19]
+    , [20,19]
+    , [21,19]
+    , [22,19]
+    , [23,19]
+    , [24,19]
+    , [25,19]
+    , [26,19]
+    , [27,19]
+    , [28,19]
+    , [29,19]
+    , [5 ,19, type_in]
+    , [5 ,18, type_in]
+    , [5 ,17, type_in]
+    , [5 ,16, type_in]
+    , [5 ,15, type_in]
+    , [5 ,14, type_in]
+    , [5 ,13, type_in]
+    , [5 ,12, type_in]
+    , [5 ,11, type_in]
+    , [5 ,10, type_in]
+    , [5 , 9, type_in]
+    , [5 , 8, type_in]
+    , [5 , 7]
+    , [7 ,19, type_in]
+    , [7 ,18, type_in]
+    , [7 ,17, type_in]
+    , [7 ,16, type_in]
+    , [7 ,15, type_in]
+    , [7 ,14, type_in]
+    , [7 ,13, type_in]
+    , [7 ,12, type_in]
+    , [7 ,11, type_in]
+    , [7 ,10, type_in]
+    , [7 , 9, type_in]
+    , [7 , 8, type_in]
+    , [7 , 7]
+    
+    ];
+var portal = [2,8];
+var player = [9,11];
+Game.reset = function(){
+    pj.x = player[0]*su;
+    pj.y = player[1]*su;
+    pj.vx = 0;
+    pj.vy = 0;
+}
+var pj;
+var prt;
+var loop = new Mocho.loop.Loop(
+    function(){
+        pj = world.DudeManager.create(player[0]*su,player[1]*su);
+        prt = world.PortalManager.create(portal[0]*su,portal[1]*su);
+        walls.forEach(
+            function(e){
+                world.WallManager.create(e[0]*su,e[1]*su,e[2]);
             }
-			jumpKey=s[Game.Input.BUTTONS.JUMP];
-			if(jumpKey[0] && jumpKey[1]){
-				pj.jump();
-			}
-			if(s[Game.Input.BUTTONS.RESET][0]){
-				Game.reset();
-			}
-			world.update(dt);
-		},
-		function(){
-			ctx.fillStyle="#000000";
-			ctx.fillRect(0, 0, canvas.width, canvas.height);
-			world.render(ctx);
-		},60
-	);
-	//loop.timeFactor = 0.1;
-	mod.run = function(){
-		loop.run();
-	};
-	mod.loop=loop;
-
-	return mod;
-})(Game||{})
-},{"../Dependencies/Mocho":1,"./Global/global":11}],23:[function(require,module,exports){
+        );
+        lavas.forEach(
+            function(e){
+                world.LavaManager.create(e[0]*su,e[1]*su,e[2]);
+            }
+        );
+    },
+    function(dt){
+        let jumpKey, s, dir;
+        Input.update();
+        //InputController.update();
+        s = Input.state.s;
+        dir = s[Input.BUTTONS.RIGHT][0] - s[Input.BUTTONS.LEFT][0];
+        switch(dir){
+            case -1:    
+                pj.moveLeft();
+                break;
+            case 1:
+                pj.moveRight();
+                break;
+        }
+        jumpKey=s[Input.BUTTONS.JUMP];
+        if(jumpKey[0] && jumpKey[1]){
+            pj.jump();
+        }
+        if(s[Input.BUTTONS.RESET][0]){
+            Game.reset();
+        }
+        world.update(dt);
+    },
+    function(){
+        ctx.fillStyle="#000000";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        world.render(ctx);
+    },60
+);
+//loop.timeFactor = 0.1;
+module.exports = {
+    run : function(){
+        loop.run();
+    },
+    loop : loop
+}
+},{"../Dependencies/Mocho":1,"../Game":22,"./Input/input":12,"./Objects":18,"./Setup/dom":20,"./World/World":21}],24:[function(require,module,exports){
 "use strict";
-var Mocho = require("./Dependencies/Mocho");
-var Game = require("./Game/Global/global");
-Mocho.load.loadImages(
-		[ "Assets/Images/tiles.png"
-		, "Assets/Images/simple_sheet.png"
-		, "Assets/Images/sheet2.png"
-		]
-	).then(
-		(imgs)=>{
-			Game.images=Game.images||{};
-			Game.images.sheet = imgs["Assets/Images/simple_sheet.png"];
-			Game.images.sheet2 = imgs["Assets/Images/sheet2.png"];
-			Game.images.tiles = imgs["Assets/Images/tiles.png"];
-			
-			require("./Game");
-			Game.run();
-		}
-	);
-
-},{"./Dependencies/Mocho":1,"./Game":21,"./Game/Global/global":11}]},{},[23]);
+require("./Game").then(game=>game.run());
+},{"./Game":22}]},{},[24]);

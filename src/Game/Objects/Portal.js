@@ -1,7 +1,7 @@
 "use strict";
-var Game = require("./../Global/global");
 var Mocho = require("./../../Dependencies/Mocho");
-Game.Managers = (function(mod){
+var loadImagesPromise = require("./../Resources/loadImages");
+//Game.Managers = (function(mod){
 	class PortalManager{
 		constructor(){
 			this.instances = [];
@@ -23,23 +23,29 @@ Game.Managers = (function(mod){
 			);
 		}
 	}
-	
-	var sheet = Game.images.tiles;
-	var tileset = 
-		new Mocho.animation.TileSheet
-			( sheet
-			, sheet.width
-			, sheet.height
-			, 16
-			, 16
-			);
-	var animationfs = new Mocho.animation.AnimationFrameSet
-			( tileset
-			, 0 + 2*10
-			, 8
-			, "repeat"
-			);
-	var animation = new Mocho.animation.Animation(animationfs,100);
+	var sheet,
+		tileset,
+		animationfs,
+		animation;
+	loadImagesPromise.then((images)=>{
+		sheet = images.tiles;
+		
+		tileset = 
+			new Mocho.animation.TileSheet
+				( sheet
+				, sheet.width
+				, sheet.height
+				, 16
+				, 16
+				);
+		animationfs = new Mocho.animation.AnimationFrameSet
+				( tileset
+				, 0 + 2*10
+				, 8
+				, "repeat"
+				);
+		animation = new Mocho.animation.Animation(animationfs,100);
+	});
 	function canvas2dContextDraw(ctx){
 		let sprite = animation.getCurrentFrame();
 		this.instances.forEach(
@@ -62,7 +68,7 @@ Game.Managers = (function(mod){
 		STEP(dt){}
 		onCollision(other){}
 	}
-	mod.PortalManager = PortalManager;
-
-	return mod;
-})(Game.Managers||{});
+	//mod.PortalManager = PortalManager;
+module.exports = PortalManager;
+//	return mod;
+//})(Game.Managers||{});

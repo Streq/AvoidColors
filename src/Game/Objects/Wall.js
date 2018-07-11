@@ -1,7 +1,7 @@
 "use strict";
-var Game = require("./../Global/global");
 var Mocho = require("./../../Dependencies/Mocho");
-Game.Managers = (function(mod){
+var loadImagesPromise = require("./../Resources/loadImages");
+//Game.Managers = (function(mod){
 	class WallManager{
 		constructor(){
 			this.instances = [];
@@ -49,16 +49,17 @@ Game.Managers = (function(mod){
 		return ret;
 	}
 	var sprites = []
-	sprites[WallManager.TYPE.BLOCK] = new Mocho.animation.Sprite( Game.images.tiles
-		 , 0, 0, 16, 16
-		 , 0, 0, 16, 16);
-	sprites[WallManager.TYPE.TILE] = new Mocho.animation.Sprite( Game.images.tiles
-		 , 16, 0, 16, 16
-		 , 0, 0, 16, 16);
-	sprites[WallManager.TYPE.LITTLE_BLOCK] = new Mocho.animation.Sprite( Game.images.tiles
-		 , 16*8, 0, 16, 16
-		 , 0, 0, 16, 16);
-	
+	loadImagesPromise.then((images)=>{
+		sprites[WallManager.TYPE.BLOCK] = new Mocho.animation.Sprite( images.tiles
+			, 0, 0, 16, 16
+			, 0, 0, 16, 16);
+		sprites[WallManager.TYPE.TILE] = new Mocho.animation.Sprite( images.tiles
+			, 16, 0, 16, 16
+			, 0, 0, 16, 16);
+		sprites[WallManager.TYPE.LITTLE_BLOCK] = new Mocho.animation.Sprite( images.tiles
+			, 16*8, 0, 16, 16
+			, 0, 0, 16, 16);
+	});
 	function canvas2dContextDraw(ctx){
 		this.instances.forEach(
 			function(eachContainer,type){
@@ -84,8 +85,8 @@ Game.Managers = (function(mod){
 		onCollision(other){}
 	}
 	//global events
-	mod.WallManager = WallManager;
-	
+//	mod.WallManager = WallManager;
+module.exports = WallManager;	
 	/*	
 	this.x += this.vx*dt + 0.5*this.ax*dt*dt;
 	this.y += this.vy*dt + 0.5*this.ay*dt*dt;
@@ -93,5 +94,5 @@ Game.Managers = (function(mod){
 	this.vx += this.ax*dt;
 	this.vy += this.ay*dt;  
 	*/
-	return mod;
-})(Game.Managers||{});
+//	return mod;
+//})(Game.Managers||{});
