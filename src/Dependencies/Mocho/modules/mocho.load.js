@@ -98,15 +98,6 @@ function loadImages(srcs, onload){
 		.then(() => onload(imgs));
 }
 
-
-
-/**
- * A map of images with their src paths as property accessors.
- * @typedef {Object} loadImages~ImageMap
- */
-
-
-
 /**
  * Load some dang json, then pass it to a callback;
  * @param {String} src - the json path,
