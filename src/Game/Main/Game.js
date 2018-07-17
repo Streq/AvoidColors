@@ -1,32 +1,46 @@
 "use strict";
-var Mocho = require("../Dependencies/Mocho");
+var Mocho = require("../../Dependencies/Mocho");
 class Game{
     constructor(){
-        this.resources = 
-            { images: null
-            , canvas: null
+        this.context = 
+            { canvas: null
             , ctx: null
-            , texts: null
+            , resources: 
+                { images: null
+                , texts: null
+                , data:
+                    { levels: []
+                    }
+                }
             };
-        this.data = 
-            { levels: []
-            };
-    }
-    loadResources(){
-        return Promise.all(
-            loadImages().then(imgs=>this.resources.images = imgs),
-            loadTexts().then(texts=>this.resources.texts = texts),
-            loadDom().then(dom=>{
-                this.resources.canvas = dom.canvas;
-                this.resources.ctx = dom.ctx;
-            })
-        );
+        this.stack = null;
     }
     run(){
-        //
+        loadResources.call(this);
+        //set initial state
+        loadState.call(this);
+        //start loop
+        startLoop.call(this);
     }
 }
+
+
 //privates
+function loadResources(){
+    return Promise.all(
+        loadImages().then(imgs=>this.context.resources.images = imgs),
+        loadTexts().then(texts=>this.context.resources.texts = texts),
+        loadDom().then(dom=>{
+            this.context.canvas = dom.canvas;
+            this.context.ctx = dom.ctx;
+        })
+    );
+}
+
+function loadState(){
+
+}
+
 function loadImages(){
     return Mocho.load.loadImages(//load the stuff
         [ "Assets/Images/tiles.png"
