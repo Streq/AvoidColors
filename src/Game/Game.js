@@ -1,10 +1,23 @@
 "use strict";
 var Mocho = require("../Mocho");
+var StateStack = Mocho.state.StateStack;
+var State = Mocho.state.State;
+var EventQueue = Mocho.input.EventQueue;
+
+/**@typedef {Object} Context
+ * @property {HTMLCanvasElement} canvas
+ * @property {CanvasRenderingContext2D} ctx
+ * @property {EventQueue} eventQueue
+ * @property {Object} resources
+ */
+
 class Game{
 	constructor(){
+		/**@type {Context} */
 		this.context = 
 			{ canvas: null
 			, ctx: null
+			, eventQueue: null
 			, resources: 
 				{ images: null
 				, texts: null
@@ -13,7 +26,9 @@ class Game{
 					}
 				}
 			};
-		this.stack = null;
+		/**@type {StateStack} */
+		this.stack = new StateStack();
+		this.stack.context=this.context;
 	}
 	run(){
 		var game = this;
@@ -26,28 +41,91 @@ class Game{
 
 
 //privates
+function loadState(){
+	/**@type Game*/
+	var game = this;
+	game.context.eventQueue = Mocho.input.makeEventQueue(game.context.canvas,["keydown","keyup"]);
+	//Some mock gameState
+	class GameState extends State{
+		constructor(stack, appContext){
+			super(stack,appContext);
+			this.x = 0;
+			this.y = 0;
+			this.counter = 0;
+			this.reset = false;
+		}
+		/**@param {KeyboardEvent} event*/
+		handleEvent(event){
+			if(event.type == "keydown" && event.code == "KeyR"){
+				this.reset = true;
+			}
+		}
+		render(){
+			/**@type Context */
+			var context = this.context,
+				ctx = context.ctx,
+				canvas = context.canvas,
+				width = canvas.width,
+				height = canvas.height;
+				
+				ctx.drawImage(context.resources.images.player,0,0,16,16,Math.floor(this.x),Math.floor(this.y),16,16);
+				
+				if(this.reset){
+					ctx.fillStyle = canvas.style.backgroundColor;
+					ctx.fillRect(0,0,width,height);
+					this.reset = false;
+				}
+		}
+		update(dt){
+			/**@type Context */
+			var context = this.context,
+				ctx = context.ctx,
+				width = context.canvas.width,
+				height = context.canvas.height;
+			
+			this.counter+=dt;
+			while(this.counter>1000/60){
+				this.counter-=1000/60;
+				this.x = Math.random() * (width-16);
+				this.y = Math.random() * (height-16);
+			}
+			return true;
+		}
+	}
+
+	game.stack.states.push(new GameState(game.stack,game.context));
+
+}
+
 function loadResources(){
-	return Promise.all(
+	return Promise.all([
 		loadImages().then(imgs=>this.context.resources.images = imgs),
 		loadTexts().then(texts=>this.context.resources.texts = texts),
 		loadDom().then(dom=>{
 			this.context.canvas = dom.canvas;
 			this.context.ctx = dom.ctx;
 		})
-	);
+	]);
 }
 
-function loadState(){
-	/*TODO*/
-}
 
 function startLoop(){
-	this.context.loop = new Mocho.loop.Loop
+	/**@type Game */
+	let game = this;
+	let loop = new Mocho.loop.Loop
 		( () => {}
-		, (dt) => {this.stack.update(dt);}
+		, (dt) => {
+			game.context.eventQueue.processEvents((event)=>{
+				game.stack.handleEvent(event);
+			});
+			game.stack.update(dt);
+		}
 		, () => {this.stack.render();}
 		, 60
 		);
+	this.context.loop = loop;
+	loop.run();
+	
 }
 function loadImages(){
 	/*TODO mover el objeto sourcemap a un json*/
@@ -85,6 +163,7 @@ function loadDom(){
 			canvas.width = 480;
 			canvas.height = 320;
 			canvas.tabIndex = 1;
+			canvas.style.backgroundColor="black";
 			canvas.addEventListener("focus",(event)=>Mocho.input.avoidArrowKeyScroll(canvas));
 			canvas.addEventListener("blur",(event)=>Mocho.input.allowArrowKeyScroll(canvas));
 			document.body.appendChild(canvas);
