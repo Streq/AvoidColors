@@ -53,6 +53,7 @@ function loadState(){
 			this.y = 0;
 			this.counter = 0;
 			this.reset = false;
+			this.renderQueue = [];
 		}
 		/**@param {KeyboardEvent} event*/
 		handleEvent(event){
@@ -67,9 +68,12 @@ function loadState(){
 				canvas = context.canvas,
 				width = canvas.width,
 				height = canvas.height;
-				
-				ctx.drawImage(context.resources.images.player,0,0,16,16,Math.floor(this.x),Math.floor(this.y),16,16);
-				
+				this.renderQueue.forEach(
+					(each)=>{
+						ctx.drawImage(context.resources.images.fontnogaps,each[0],each[1],8,8,each[2],each[3],8,8);
+					}
+				);
+				this.renderQueue = [];
 				if(this.reset){
 					ctx.fillStyle = canvas.style.backgroundColor;
 					ctx.fillRect(0,0,width,height);
@@ -84,10 +88,15 @@ function loadState(){
 				height = context.canvas.height;
 			
 			this.counter+=dt;
-			while(this.counter>1000/60){
-				this.counter-=1000/60;
-				this.x = Math.random() * (width-16);
-				this.y = Math.random() * (height-16);
+			while(this.counter>1){
+				this.counter-=1;
+				
+				this.renderQueue.push(
+					[Math.floor(Math.random() * (16))*8
+					,Math.floor(Math.random() * (12))*8
+					,Math.floor(Math.random() * (width) / 8) * 8
+					,Math.floor(Math.random() * (height) / 8) * 8]
+				);
 			}
 			return true;
 		}
@@ -132,7 +141,8 @@ function loadImages(){
 	var sourcemap = {
 		"player": "Assets/Images/player.png",
 		"tiles": "Assets/Images/tiles.png",
-		"font": "Assets/Images/font8x8.png"
+		"font": "Assets/Images/font8x8.png",
+		"fontnogaps": "Assets/Images/font8x8nogaps.png"
 	};
 	//creamos un array con las rutas de las imagenes
 	var srcs = [];
